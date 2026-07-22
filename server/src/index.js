@@ -8,13 +8,14 @@ import { connectDb } from './db.js';
 import authRoutes from './routes/auth.js';
 import cvRoutes from './routes/cvs.js';
 import aiRoutes from './routes/ai.js';
+import { envInt, envStr } from './services/env.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 dotenv.config({ path: path.join(__dirname, '../.env') });
 
 const app = express();
-const port = Number(process.env.PORT || 3000);
-const origin = process.env.CLIENT_ORIGIN || 'http://localhost:4200';
+const port = envInt('PORT', 3000);
+const origin = envStr('CLIENT_ORIGIN', 'http://localhost:4200');
 
 app.use(morgan('dev'));
 app.use(
@@ -39,12 +40,12 @@ app.use((err, _req, res, _next) => {
 });
 
 async function boot() {
-  const uri = process.env.MONGODB_URI;
+  const uri = envStr('MONGODB_URI');
   if (!uri) {
     console.error('Missing MONGODB_URI');
     process.exit(1);
   }
-  if (!process.env.JWT_SECRET) {
+  if (!envStr('JWT_SECRET')) {
     console.error('Missing JWT_SECRET');
     process.exit(1);
   }

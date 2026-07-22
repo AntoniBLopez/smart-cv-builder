@@ -2,14 +2,9 @@ import { Router } from 'express';
 import { OAuth2Client } from 'google-auth-library';
 import { User } from '../models/User.js';
 import { signToken, requireAuth } from '../middleware/auth.js';
+import { envStr } from '../services/env.js';
 
 const router = Router();
-
-function envStr(name) {
-  return String(process.env[name] || '')
-    .trim()
-    .replace(/^['"]|['"]$/g, '');
-}
 
 function getGoogleClient() {
   const clientId = envStr('GOOGLE_CLIENT_ID');

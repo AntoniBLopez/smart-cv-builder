@@ -1,14 +1,14 @@
+import { envStr } from './env.js';
+
 /**
  * Collects numbered API keys from env, e.g. GROQ_API_KEY_1, GROQ_API_KEY_2.
  * Skips empty / commented-out values.
  */
 export function collectKeys(prefix) {
   const keys = [];
-  for (const [name, value] of Object.entries(process.env)) {
+  for (const name of Object.keys(process.env)) {
     if (!name.startsWith(prefix)) continue;
-    const cleaned = String(value || '')
-      .trim()
-      .replace(/^['"]|['"]$/g, '');
+    const cleaned = envStr(name);
     if (!cleaned || cleaned.startsWith('#')) continue;
     keys.push({ name, key: cleaned });
   }
