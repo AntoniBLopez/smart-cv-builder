@@ -1,0 +1,64 @@
+<div class="auth-page">
+  <div class="auth-card">
+    <h1>CV Builder</h1>
+    <p class="subtitle">
+      {{ mode() === 'login' ? 'Inicia sesión para gestionar tus CVs' : 'Crea tu cuenta' }}
+    </p>
+
+    <div class="tabs">
+      <button type="button" [class.active]="mode() === 'login'" (click)="switchMode('login')">
+        Entrar
+      </button>
+      <button type="button" [class.active]="mode() === 'register'" (click)="switchMode('register')">
+        Registrarse
+      </button>
+    </div>
+
+    @if (googleReady()) {
+      <div class="google-wrap">
+        <div #googleBtn class="google-btn"></div>
+      </div>
+      <div class="divider"><span>o con email</span></div>
+    }
+
+    <form (ngSubmit)="submit()">
+      @if (mode() === 'register') {
+        <label>
+          Nombre
+          <input [(ngModel)]="name" name="name" autocomplete="name" />
+        </label>
+      }
+
+      <label>
+        Email
+        <input
+          type="email"
+          [(ngModel)]="email"
+          name="email"
+          required
+          autocomplete="email"
+        />
+      </label>
+
+      <label>
+        Contraseña
+        <input
+          type="password"
+          [(ngModel)]="password"
+          name="password"
+          required
+          minlength="6"
+          autocomplete="{{ mode() === 'login' ? 'current-password' : 'new-password' }}"
+        />
+      </label>
+
+      @if (error()) {
+        <p class="error">{{ error() }}</p>
+      }
+
+      <button type="submit" class="submit" [disabled]="loading()">
+        {{ loading() ? 'Espera…' : mode() === 'login' ? 'Entrar' : 'Crear cuenta' }}
+      </button>
+    </form>
+  </div>
+</div>

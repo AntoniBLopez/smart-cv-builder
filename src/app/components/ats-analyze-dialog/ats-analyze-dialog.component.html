@@ -1,0 +1,149 @@
+<div class="ats-backdrop" (click)="onBackdrop($event)">
+  <div class="ats-dialog" role="dialog" aria-labelledby="ats-title">
+    <header class="ats-header">
+      <div>
+        <h2 id="ats-title">
+          <span class="sparkle" aria-hidden="true">✨</span>
+          Análisis ATS con IA
+        </h2>
+        <p class="subtitle">
+          Compara tu CV con la Job Description: keywords, empresa y consejos para pasar filtros ATS.
+        </p>
+      </div>
+      <button type="button" class="close-btn" (click)="close()" aria-label="Cerrar">×</button>
+    </header>
+
+    <div class="ats-body">
+      <label>
+        Job Description
+        <textarea
+          [(ngModel)]="jobDescription"
+          name="jobDescription"
+          rows="8"
+          placeholder="Pega aquí la oferta de trabajo completa…"
+        ></textarea>
+      </label>
+
+      <label class="optional">
+        Web de la empresa (opcional)
+        <input
+          type="url"
+          [(ngModel)]="companyUrl"
+          name="companyUrl"
+          placeholder="https://empresa.com"
+        />
+      </label>
+
+      @if (error()) {
+        <p class="error">{{ error() }}</p>
+      }
+
+      <button type="button" class="analyze-btn" (click)="analyze()" [disabled]="loading()">
+        @if (loading()) {
+          Analizando…
+        } @else {
+          Analizar CV vs oferta
+        }
+      </button>
+
+      @if (analysis(); as a) {
+        <section class="results">
+          @if (metaLabel()) {
+            <p class="meta">{{ metaLabel() }}</p>
+          }
+
+          <div class="score-row">
+            <div class="score" [attr.data-level]="a.matchScore >= 75 ? 'good' : a.matchScore >= 50 ? 'mid' : 'low'">
+              <span class="score-num">{{ a.matchScore }}</span>
+              <span class="score-label">Match ATS</span>
+            </div>
+            <div class="company-card">
+              <strong>{{ a.company.name || 'Empresa' }}</strong>
+              <span class="sector">{{ a.company.sector }}</span>
+              <p>{{ a.company.summary }}</p>
+              @if (a.company.needs.length) {
+                <ul>
+                  @for (n of a.company.needs; track n) {
+                    <li>{{ n }}</li>
+                  }
+                </ul>
+              }
+            </div>
+          </div>
+
+          <div class="kw-grid">
+            <div>
+              <h3>Keywords de la oferta</h3>
+              <div class="chips">
+                @for (k of a.keywords.requiredFromJd; track k) {
+                  <span class="chip">{{ k }}</span>
+                }
+              </div>
+            </div>
+            <div>
+              <h3>Presentes en tu CV</h3>
+              <div class="chips">
+                @for (k of a.keywords.presentInCv; track k) {
+                  <span class="chip ok">{{ k }}</span>
+                }
+              </div>
+            </div>
+            <div>
+              <h3>Faltan en tu CV</h3>
+              <div class="chips">
+                @for (k of a.keywords.missingFromCv; track k) {
+                  <span class="chip miss">{{ k }}</span>
+                }
+              </div>
+            </div>
+            <div>
+              <h3>Sugeridas a añadir</h3>
+              <div class="chips">
+                @for (k of a.keywords.suggestedAdditions; track k) {
+                  <span class="chip suggest">{{ k }}</span>
+                }
+              </div>
+            </div>
+          </div>
+
+          <div class="two-col">
+            <div>
+              <h3>Fortalezas ATS</h3>
+              <ul>
+                @for (s of a.atsChecks.strengths; track s) {
+                  <li>{{ s }}</li>
+                }
+              </ul>
+            </div>
+            <div>
+              <h3>Riesgos ATS</h3>
+              <ul>
+                @for (r of a.atsChecks.risks; track r) {
+                  <li>{{ r }}</li>
+                }
+              </ul>
+            </div>
+          </div>
+
+          <div>
+            <h3>Prioridad</h3>
+            <ol>
+              @for (p of a.priorityFixes; track p) {
+                <li>{{ p }}</li>
+              }
+            </ol>
+          </div>
+
+          <div>
+            <h3>Consejos</h3>
+            <ul>
+              @for (tip of a.advice; track tip) {
+                <li>{{ tip }}</li>
+              }
+            </ul>
+          </div>
+        </section>
+      }
+    </div>
+  </div>
+</div>

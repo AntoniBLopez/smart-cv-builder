@@ -1,0 +1,50 @@
+<div class="cropper-overlay" (click)="cancel()">
+  <div class="cropper-modal" (click)="$event.stopPropagation()">
+    <header>
+      <h3>Ajustar foto</h3>
+      <p>Arrastra para mover y usa el zoom para encuadrar</p>
+    </header>
+
+    <div class="cropper-wrap" [class.round]="roundCropper">
+      <image-cropper
+        [imageChangedEvent]="imageChangedEvent"
+        [imageBase64]="imageBase64"
+        [imageURL]="imageURL"
+        [maintainAspectRatio]="true"
+        [aspectRatio]="1"
+        [roundCropper]="roundCropper"
+        [resizeToWidth]="400"
+        [cropperMinWidth]="80"
+        [onlyScaleDown]="false"
+        [allowMoveImage]="true"
+        [transform]="transform"
+        [imageQuality]="92"
+        format="jpeg"
+        output="base64"
+        alignImage="center"
+        (imageCropped)="onImageCropped($event)"
+      />
+    </div>
+
+    <div class="zoom-controls">
+      <button type="button" (click)="zoomOut()" title="Alejar">−</button>
+      <input
+        type="range"
+        min="0.5"
+        max="3"
+        step="0.05"
+        [ngModel]="scale"
+        (ngModelChange)="onScaleChange(+$event)"
+      />
+      <button type="button" (click)="zoomIn()" title="Acercar">+</button>
+      <span class="zoom-label">{{ zoomPercent }}%</span>
+    </div>
+
+    <footer>
+      <button type="button" class="btn ghost" (click)="cancel()">Cancelar</button>
+      <button type="button" class="btn primary" (click)="apply()" [disabled]="!croppedImage">
+        Aplicar
+      </button>
+    </footer>
+  </div>
+</div>

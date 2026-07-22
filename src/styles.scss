@@ -1,0 +1,112 @@
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  background: #1e272e;
+  color: #dfe6e9;
+  -webkit-font-smoothing: antialiased;
+}
+
+input,
+textarea,
+select,
+button {
+  font-family: inherit;
+}
+
+::-webkit-scrollbar {
+  width: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #636e72;
+  border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #b2bec3;
+}
+
+/* PDF export via native browser print — preserves selectable text for ATS */
+@media print {
+  @page {
+    size: A4 portrait;
+    margin: 0;
+  }
+
+  html,
+  body {
+    height: auto !important;
+    overflow: visible !important;
+    background: #fff !important;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+
+  app-toolbar,
+  .dropdown-panel,
+  .editor-sidebar,
+  .config-sidebar,
+  app-photo-cropper,
+  .cropper-overlay {
+    display: none !important;
+  }
+
+  .app,
+  .workspace,
+  .preview-area,
+  app-cv-preview,
+  .preview-wrapper,
+  .preview-scroll,
+  .cv-render {
+    display: block !important;
+    width: auto !important;
+    height: auto !important;
+    min-height: 0 !important;
+    overflow: visible !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    background: #fff !important;
+    box-shadow: none !important;
+    transform: none !important;
+  }
+
+  .cv-page {
+    width: 210mm !important;
+    max-width: 210mm !important;
+    min-height: 297mm !important;
+    height: auto !important;
+    margin: 0 auto !important;
+    box-shadow: none !important;
+    overflow: visible !important;
+  }
+}
+
+body.cv-print-mode {
+  overflow: hidden;
+}
+
+body.cv-print-mode .pages-stack,
+body.cv-print-mode .preview-meta {
+  display: none !important;
+}
+
+body.cv-print-mode .cv-measure-host {
+  position: static !important;
+  left: auto !important;
+  opacity: 1 !important;
+  pointer-events: auto !important;
+  width: auto !important;
+}

@@ -1,0 +1,98 @@
+<div class="custom-panel">
+  <h3>Personalización</h3>
+
+  <div class="group">
+    <label>Paletas de color</label>
+    <div class="presets">
+      @for (preset of colorPresets; track preset.name) {
+        <button
+          class="preset-btn"
+          [title]="preset.name"
+          (click)="applyPreset(preset)"
+        >
+          <span [style.background]="preset.primary"></span>
+          <span [style.background]="preset.secondary"></span>
+          <span [style.background]="preset.accent"></span>
+        </button>
+      }
+    </div>
+  </div>
+
+  <div class="group-row">
+    <div class="group">
+      <label>Color primario</label>
+      <input type="color" [ngModel]="theme().primaryColor" (ngModelChange)="updateTheme('primaryColor', $event)" />
+    </div>
+    <div class="group">
+      <label>Color secundario</label>
+      <input type="color" [ngModel]="theme().secondaryColor" (ngModelChange)="updateTheme('secondaryColor', $event)" />
+    </div>
+  </div>
+
+  <div class="group-row">
+    <div class="group">
+      <label>Color acento</label>
+      <input type="color" [ngModel]="theme().accentColor" (ngModelChange)="updateTheme('accentColor', $event)" />
+    </div>
+    <div class="group">
+      <label>Color texto</label>
+      <input type="color" [ngModel]="theme().textColor" (ngModelChange)="updateTheme('textColor', $event)" />
+    </div>
+  </div>
+
+  <div class="group-row">
+    <div class="group">
+      <label>Fondo</label>
+      <input type="color" [ngModel]="theme().backgroundColor" (ngModelChange)="updateTheme('backgroundColor', $event)" />
+    </div>
+    <div class="group">
+      <label>Sidebar</label>
+      <input type="color" [ngModel]="theme().sidebarColor" (ngModelChange)="updateTheme('sidebarColor', $event)" />
+    </div>
+  </div>
+
+  <div class="group">
+    <label>Fuente</label>
+    <select [ngModel]="theme().fontFamily" (ngModelChange)="updateTheme('fontFamily', $event)">
+      @for (font of fonts; track font) {
+        <option [value]="font">{{ font }}</option>
+      }
+    </select>
+  </div>
+
+  <div class="group">
+    <label>Tamaño de fuente: {{ theme().fontSize }}px</label>
+    <input type="range" min="10" max="18" [ngModel]="theme().fontSize" (ngModelChange)="updateTheme('fontSize', +$event)" />
+  </div>
+
+  <div class="group">
+    <label>Interlineado: {{ theme().lineHeight }}</label>
+    <input type="range" min="1" max="2" step="0.1" [ngModel]="theme().lineHeight" (ngModelChange)="updateTheme('lineHeight', +$event)" />
+  </div>
+
+  <div class="group">
+    <label>Espaciado secciones: {{ theme().sectionSpacing }}px</label>
+    <input type="range" min="12" max="48" [ngModel]="theme().sectionSpacing" (ngModelChange)="updateTheme('sectionSpacing', +$event)" />
+  </div>
+
+  <div class="group">
+    <label>Ancho sidebar: {{ theme().sidebarWidth }}%</label>
+    <input type="range" min="25" max="40" [ngModel]="theme().sidebarWidth" (ngModelChange)="updateTheme('sidebarWidth', +$event)" />
+  </div>
+
+  <div class="group">
+    <label>Forma de foto</label>
+    <select [ngModel]="theme().photoShape" (ngModelChange)="updateTheme('photoShape', $event)">
+      @for (shape of photoShapes; track shape.value) {
+        <option [value]="shape.value">{{ shape.label }}</option>
+      }
+    </select>
+  </div>
+
+  <div class="group checkbox-group">
+    <label>
+      <input type="checkbox" [ngModel]="theme().showPhoto" (ngModelChange)="updateTheme('showPhoto', $event)" />
+      Mostrar foto de perfil
+    </label>
+  </div>
+</div>

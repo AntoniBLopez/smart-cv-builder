@@ -1,0 +1,6 @@
+# Multi-process TUI: switch panels with Tab / arrows, restart with `r`, quit with `q`
+procs:
+  api:
+    shell: "pnpm run start:api"
+  web:
+    shell: "pnpm start"

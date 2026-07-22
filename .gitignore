@@ -1,0 +1,40 @@
+# Dependencies
+node_modules/
+server/node_modules/
+
+# Environment / secrets
+.env
+.env.*
+!.env.example
+server/.env
+
+# Build / cache
+dist/
+.angular/
+tmp/
+out-tsc/
+*.tsbuildinfo
+
+# Logs
+logs/
+*.log
+npm-debug.log*
+pnpm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Test / coverage
+coverage/
+.nyc_output/
+
+# IDE / OS
+.idea/
+*.swp
+.DS_Store
+Thumbs.db
+
+# Optional local tooling
+*.local
+
+# Images
+/public/images/

@@ -1,0 +1,141 @@
+.auth-page {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  background:
+    radial-gradient(circle at top left, rgba(93, 156, 236, 0.18), transparent 40%),
+    #1e272e;
+}
+
+.auth-card {
+  width: min(420px, 100%);
+  background: #2d3436;
+  border: 1px solid #3d3d3d;
+  border-radius: 12px;
+  padding: 28px;
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.35);
+}
+
+h1 {
+  margin: 0;
+  color: #fff;
+  font-size: 1.6em;
+}
+
+.subtitle {
+  margin: 6px 0 20px;
+  color: #b2bec3;
+  font-size: 0.9em;
+}
+
+.tabs {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 6px;
+  margin-bottom: 18px;
+
+  button {
+    background: #1e272e;
+    border: 1px solid #3d3d3d;
+    color: #b2bec3;
+    padding: 10px;
+    border-radius: 8px;
+    cursor: pointer;
+
+    &.active {
+      color: #fff;
+      border-color: #5d9cec;
+      background: rgba(93, 156, 236, 0.12);
+    }
+  }
+}
+
+.google-wrap {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 4px;
+}
+
+.google-btn {
+  min-height: 44px;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+}
+
+.divider {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin: 16px 0;
+  color: #636e72;
+  font-size: 0.75em;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+
+  &::before,
+  &::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: #3d3d3d;
+  }
+}
+
+form {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+label {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  color: #b2bec3;
+  font-size: 0.8em;
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+}
+
+input {
+  background: #1e272e;
+  border: 1px solid #3d3d3d;
+  border-radius: 8px;
+  color: #fff;
+  padding: 10px 12px;
+  font-size: 0.95em;
+
+  &:focus {
+    outline: none;
+    border-color: #5d9cec;
+  }
+}
+
+.error {
+  margin: 0;
+  color: #ff7675;
+  font-size: 0.85em;
+}
+
+.submit {
+  margin-top: 8px;
+  background: #5d9cec;
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  padding: 12px;
+  font-weight: 600;
+  cursor: pointer;
+
+  &:disabled {
+    opacity: 0.6;
+    cursor: default;
+  }
+
+  &:hover:not(:disabled) {
+    background: #4a89dc;
+  }
+}

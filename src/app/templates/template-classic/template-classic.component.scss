@@ -1,0 +1,139 @@
+.cv-page.classic {
+  width: 794px;
+  min-height: 1123px;
+  padding: 48px 56px;
+  font-family: var(--cv-font);
+  font-size: var(--cv-font-size);
+  line-height: var(--cv-line-height);
+  color: var(--cv-text);
+  background: var(--cv-bg);
+
+  .header {
+    text-align: center;
+    border-bottom: 3px double var(--cv-primary);
+    padding-bottom: 24px;
+    margin-bottom: var(--cv-section-spacing);
+  }
+
+  .header-top {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 24px;
+    margin-bottom: 16px;
+  }
+
+  .photo-wrap img,
+  .photo-placeholder {
+    width: 100px;
+    height: 100px;
+    object-fit: cover;
+  }
+
+  .photo-placeholder {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--cv-primary);
+    color: #fff;
+    font-size: 40px;
+    font-weight: 700;
+  }
+
+  h1 {
+    margin: 0;
+    font-size: 2.2em;
+    color: var(--cv-primary);
+  }
+
+  h2 {
+    margin: 4px 0 0;
+    font-size: 1.1em;
+    font-weight: 400;
+    color: #64748b;
+  }
+
+  .contact-row {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 8px 20px;
+    font-size: 0.85em;
+    color: #64748b;
+
+    span:not(:last-child)::after {
+      content: '•';
+      margin-left: 20px;
+      color: var(--cv-primary);
+    }
+  }
+
+  .section {
+    margin-bottom: var(--cv-section-spacing);
+  }
+
+  .section-title {
+    color: var(--cv-primary);
+    font-size: 1em;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    border-bottom: 1px solid var(--cv-primary);
+    padding-bottom: 4px;
+    margin: 0 0 12px;
+  }
+
+  .entry {
+    margin-bottom: 16px;
+  }
+
+  .entry-row {
+    display: flex;
+    justify-content: space-between;
+    gap: 12px;
+  }
+
+  .entry-title {
+    color: var(--cv-text);
+  }
+
+  .entry-date,
+  .entry-loc {
+    font-size: 0.85em;
+    color: #64748b;
+    font-style: italic;
+    white-space: nowrap;
+  }
+
+  ul {
+    margin: 6px 0 0;
+    padding-left: 18px;
+
+    li::marker {
+      color: var(--cv-primary);
+    }
+  }
+
+  .inline-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+
+    span {
+      background: var(--cv-accent);
+      color: var(--cv-secondary);
+      padding: 4px 14px;
+      border-radius: 4px;
+      font-size: 0.9em;
+    }
+
+    &.outline span {
+      background: transparent;
+      border: 1px solid var(--cv-primary);
+      color: var(--cv-text);
+    }
+  }
+
+  .lang-row {
+    margin-bottom: 6px;
+  }
+}

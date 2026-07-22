@@ -1,0 +1,81 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "api",
+      "type": "shell",
+      "command": "pnpm run start:api",
+      "isBackground": true,
+      "problemMatcher": {
+        "owner": "cv-api",
+        "pattern": { "regexp": "^$" },
+        "background": {
+          "activeOnStart": true,
+          "beginsPattern": ".",
+          "endsPattern": "API listening|listening on"
+        }
+      },
+      "presentation": {
+        "echo": true,
+        "reveal": "always",
+        "focus": false,
+        "panel": "dedicated",
+        "showReuseMessage": false,
+        "clear": true,
+        "group": "cv-dev",
+        "close": false
+      }
+    },
+    {
+      "label": "web",
+      "type": "shell",
+      "command": "pnpm start",
+      "isBackground": true,
+      "problemMatcher": {
+        "owner": "typescript",
+        "pattern": "$tsc",
+        "background": {
+          "activeOnStart": true,
+          "beginsPattern": ".",
+          "endsPattern": "Local:|Application bundle generation complete|bundle generation complete"
+        }
+      },
+      "presentation": {
+        "echo": true,
+        "reveal": "always",
+        "focus": true,
+        "panel": "dedicated",
+        "showReuseMessage": false,
+        "clear": true,
+        "group": "cv-dev",
+        "close": false
+      }
+    },
+    {
+      "label": "Run",
+      "detail": "Abre API y Web en terminales divididas (control por separado)",
+      "dependsOn": ["api", "web"],
+      "dependsOrder": "parallel",
+      "problemMatcher": [],
+      "group": {
+        "kind": "build",
+        "isDefault": true
+      }
+    },
+    {
+      "label": "Dev (mprocs TUI)",
+      "detail": "Terminal personalizada mprocs: paneles API/WEB con reinicio individual",
+      "type": "shell",
+      "command": "pnpm dev",
+      "isBackground": true,
+      "problemMatcher": [],
+      "presentation": {
+        "reveal": "always",
+        "panel": "dedicated",
+        "focus": true,
+        "clear": true
+      },
+      "group": "build"
+    }
+  ]
+}

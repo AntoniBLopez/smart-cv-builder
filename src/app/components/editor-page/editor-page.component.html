@@ -1,0 +1,45 @@
+@if (loading() || !ready()) {
+  <div class="boot-screen">
+    <div class="boot-card">
+      <h1>CV Builder</h1>
+      <p>Cargando tus CVs desde MongoDB…</p>
+    </div>
+  </div>
+} @else {
+  <div class="app">
+    <app-toolbar
+      (downloadClicked)="onDownload()"
+      (panelToggled)="onPanelToggle($event)"
+      (atsAnalyzeClicked)="openAtsDialog()"
+    />
+
+    @if (syncError()) {
+      <div class="sync-banner">{{ syncError() }}</div>
+    }
+
+    <div class="workspace">
+      <aside class="editor-sidebar">
+        <app-editor-panel />
+      </aside>
+
+      @if (sidePanel) {
+        <aside class="config-sidebar">
+          @if (sidePanel === 'theme') {
+            <app-customization-panel />
+          }
+          @if (sidePanel === 'sections') {
+            <app-sections-panel />
+          }
+        </aside>
+      }
+
+      <main class="preview-area">
+        <app-cv-preview />
+      </main>
+    </div>
+
+    @if (showAtsDialog()) {
+      <app-ats-analyze-dialog (closed)="closeAtsDialog()" />
+    }
+  </div>
+}

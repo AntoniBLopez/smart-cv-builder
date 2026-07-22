@@ -1,0 +1,27 @@
+<div class="sections-panel">
+  <h3>Orden y visibilidad</h3>
+  <p class="hint">Activa/desactiva secciones y reordénalas.</p>
+
+  @for (section of sortedSections; track section.id; let i = $index) {
+    <div class="section-row" [class.off]="!section.visible">
+      <div class="section-info">
+        <span class="section-name">{{ section.label }}</span>
+        <span class="section-status">{{ section.visible ? 'Visible' : 'Oculta' }}</span>
+      </div>
+      <div class="section-controls">
+        <label class="switch" title="Mostrar / ocultar">
+          <input
+            type="checkbox"
+            [ngModel]="section.visible"
+            (ngModelChange)="toggleVisibility(section.id, $event)"
+          />
+          <span class="slider"></span>
+        </label>
+        <div class="move-btns">
+          <button (click)="moveUp(i)" [disabled]="i === 0" title="Subir">↑</button>
+          <button (click)="moveDown(i)" [disabled]="i === sortedSections.length - 1" title="Bajar">↓</button>
+        </div>
+      </div>
+    </div>
+  }
+</div>

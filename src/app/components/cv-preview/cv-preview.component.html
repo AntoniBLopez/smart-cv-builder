@@ -1,0 +1,103 @@
+<div class="preview-wrapper">
+  <div class="preview-meta">
+    <div class="meta-row">
+      <span class="page-badge">
+        {{ pageCount() }} {{ pageCount() === 1 ? 'página' : 'páginas' }}
+      </span>
+      <button type="button" class="reset-btn" (click)="openResetDialog()">
+        Reset CV
+      </button>
+    </div>
+    <span class="page-hint">Simulación A4 · igual que al descargar el PDF</span>
+  </div>
+
+  <div class="pages-stack">
+    @for (page of pageIndexes(); track page) {
+      <div class="page-sheet">
+        <div class="page-label">Página {{ page + 1 }} / {{ pageCount() }}</div>
+        <div class="page-clip">
+          <div
+            class="page-shift"
+            [style.transform]="'translateY(-' + page * pageHeight + 'px)'"
+          >
+            <ng-container *ngTemplateOutlet="cvTemplate" />
+          </div>
+        </div>
+      </div>
+    }
+  </div>
+
+  <!-- Full CV for measurement + print/PDF (selectable text) -->
+  <div class="cv-measure-host" aria-hidden="true">
+    <div #measureHost #cvElement class="cv-render" id="cv-export-target">
+      <ng-container *ngTemplateOutlet="cvTemplate" />
+    </div>
+  </div>
+</div>
+
+@if (resetStep() > 0) {
+  <div class="reset-backdrop" (click)="onResetBackdrop($event)" role="presentation">
+    <div
+      class="reset-dialog"
+      role="alertdialog"
+      aria-modal="true"
+      aria-labelledby="reset-title"
+      aria-describedby="reset-desc"
+      (click)="$event.stopPropagation()"
+    >
+      <div class="reset-icon" aria-hidden="true">⚠</div>
+
+      @if (resetStep() === 1) {
+        <h2 id="reset-title">¿Resetear este CV?</h2>
+        <p id="reset-desc">
+          Perderás <strong>toda la información editada</strong>: experiencia, educación,
+          skills, contacto, foto, diseño y secciones personalizadas.
+          Se restaurarán los datos de ejemplo.
+        </p>
+        <p class="reset-cv-name">CV: {{ cv().name }}</p>
+        <div class="reset-actions">
+          <button type="button" class="btn ghost" (click)="closeResetDialog()">Cancelar</button>
+          <button type="button" class="btn danger" (click)="goToResetStep2()">Continuar</button>
+        </div>
+      } @else {
+        <h2 id="reset-title">Última confirmación</h2>
+        <p id="reset-desc">
+          Esta acción <strong>no se puede deshacer</strong>.
+          ¿Estás seguro de que quieres resetear el CV ahora?
+        </p>
+        <div class="reset-actions">
+          <button type="button" class="btn ghost" (click)="closeResetDialog()">Cancelar</button>
+          <button type="button" class="btn danger solid" (click)="performReset()">
+            Sí, resetear CV
+          </button>
+        </div>
+      }
+
+      <div class="reset-steps" aria-hidden="true">
+        <span [class.active]="resetStep() === 1">1</span>
+        <span class="reset-steps-sep"></span>
+        <span [class.active]="resetStep() === 2">2</span>
+      </div>
+    </div>
+  </div>
+}
+
+<ng-template #cvTemplate>
+  @switch (templateId()) {
+    @case ('professional') {
+      <app-template-professional [cv]="cv()" />
+    }
+    @case ('classic') {
+      <app-template-classic [cv]="cv()" />
+    }
+    @case ('modern') {
+      <app-template-modern [cv]="cv()" />
+    }
+    @case ('creative') {
+      <app-template-creative [cv]="cv()" />
+    }
+    @case ('executive') {
+      <app-template-executive [cv]="cv()" />
+    }
+  }
+</ng-template>

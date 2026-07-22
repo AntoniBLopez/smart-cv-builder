@@ -1,0 +1,144 @@
+.cv-page.executive {
+  width: 794px;
+  min-height: 1123px;
+  font-family: var(--cv-font);
+  font-size: var(--cv-font-size);
+  line-height: var(--cv-line-height);
+  color: var(--cv-text);
+  background: var(--cv-bg);
+
+  .top-band {
+    background: #1a1a2e;
+    padding: 36px 48px;
+    color: #fff;
+  }
+
+  .band-content {
+    display: flex;
+    align-items: center;
+    gap: 28px;
+  }
+
+  .photo-wrap img,
+  .photo-placeholder {
+    width: 90px;
+    height: 90px;
+    object-fit: cover;
+    border: 3px solid var(--cv-primary);
+  }
+
+  .photo-placeholder {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--cv-primary);
+    color: #fff;
+    font-size: 36px;
+    font-weight: 700;
+  }
+
+  .name-block {
+    flex: 1;
+
+    h1 {
+      margin: 0;
+      font-size: 2em;
+      font-weight: 300;
+      letter-spacing: 1px;
+    }
+
+    h2 {
+      margin: 4px 0 0;
+      font-size: 1em;
+      font-weight: 400;
+      color: var(--cv-primary);
+      letter-spacing: 2px;
+      text-transform: uppercase;
+    }
+  }
+
+  .contact-block {
+    text-align: right;
+    font-size: 0.8em;
+    line-height: 1.8;
+    opacity: 0.85;
+  }
+
+  .page-body {
+    padding: 36px 48px;
+  }
+
+  .summary-section {
+    border-bottom: 1px solid #e2e8f0;
+    padding-bottom: var(--cv-section-spacing);
+    margin-bottom: var(--cv-section-spacing);
+
+    .lead {
+      font-size: 1.05em;
+      color: #475569;
+      margin: 0;
+      font-style: italic;
+    }
+  }
+
+  .section {
+    margin-bottom: var(--cv-section-spacing);
+  }
+
+  .section-title {
+    margin: 0 0 16px;
+    font-size: 0.85em;
+    text-transform: uppercase;
+    letter-spacing: 3px;
+    color: var(--cv-primary);
+    font-weight: 600;
+    border-bottom: 1px solid var(--cv-primary);
+    padding-bottom: 6px;
+  }
+
+  .two-col-entries .entry {
+    display: flex;
+    gap: 24px;
+    margin-bottom: 20px;
+  }
+
+  .entry-date-col {
+    width: 120px;
+    flex-shrink: 0;
+    font-size: 0.85em;
+    color: #64748b;
+    font-weight: 600;
+    padding-top: 2px;
+  }
+
+  .entry-detail-col {
+    flex: 1;
+
+    h4 {
+      margin: 0 0 2px;
+      font-size: 1.05em;
+    }
+
+    .org {
+      margin: 0 0 8px;
+      font-size: 0.9em;
+      color: #64748b;
+    }
+
+    ul {
+      margin: 0;
+      padding-left: 16px;
+
+      li {
+        margin-bottom: 3px;
+        font-size: 0.95em;
+      }
+    }
+  }
+
+  .skills-line,
+  .lang-line {
+    font-size: 0.95em;
+    line-height: 1.8;
+  }
+}

@@ -1,0 +1,540 @@
+<div class="editor-panel">
+  <nav class="tabs">
+    @for (tab of tabs; track tab.id) {
+      <button [class.active]="activeTab === tab.id" (click)="activeTab = tab.id">
+        {{ tab.label }}
+      </button>
+    }
+  </nav>
+
+  <div class="tab-content">
+    @switch (activeTab) {
+      @case ('personal') {
+        <div class="form-section">
+          <h4>Información personal</h4>
+          <div class="field">
+            <label>Nombre completo</label>
+            <input
+              [ngModel]="cv().personalInfo.fullName"
+              (ngModelChange)="store.updatePersonalInfo({ fullName: $event })"
+            />
+          </div>
+          <div class="field">
+            <label>Título profesional</label>
+            <input
+              [ngModel]="cv().personalInfo.title"
+              (ngModelChange)="store.updatePersonalInfo({ title: $event })"
+            />
+          </div>
+          <div class="field">
+            <div class="section-header compact">
+              <label>Resumen</label>
+              <label class="switch" title="Mostrar / ocultar en el CV">
+                <input
+                  type="checkbox"
+                  [ngModel]="isSectionVisible('summary')"
+                  (ngModelChange)="toggleSection('summary', $event)"
+                />
+                <span class="slider"></span>
+              </label>
+            </div>
+            <textarea
+              rows="4"
+              [ngModel]="cv().personalInfo.summary"
+              (ngModelChange)="store.updatePersonalInfo({ summary: $event })"
+            ></textarea>
+          </div>
+          <div class="field">
+            <label>Foto de perfil</label>
+            <div class="photo-actions">
+              <input
+                #photoInput
+                type="file"
+                accept="image/*"
+                (change)="onPhotoSelected($event)"
+              />
+              @if (cv().personalInfo.photoUrl) {
+                <button type="button" class="add-small" (click)="adjustCurrentPhoto()">
+                  Ajustar / zoom
+                </button>
+              }
+            </div>
+            @if (cv().personalInfo.photoUrl) {
+              <img class="photo-preview" [src]="cv().personalInfo.photoUrl" alt="Vista previa" />
+            }
+          </div>
+        </div>
+
+        <div class="form-section">
+          <h4>Contacto</h4>
+          <div class="field" [class.field-hidden]="!cv().contact.visibility.email">
+            <label>Email</label>
+            <div class="input-with-action">
+              <input [ngModel]="cv().contact.email" (ngModelChange)="store.updateContact({ email: $event })" />
+              <button
+                type="button"
+                class="icon-btn"
+                [title]="cv().contact.visibility.email ? 'Ocultar en el CV' : 'Mostrar en el CV'"
+                (click)="store.toggleContactVisibility('email')"
+              >
+                @if (cv().contact.visibility.email) {
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+                    <circle cx="12" cy="12" r="3"/>
+                  </svg>
+                } @else {
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94"/>
+                    <path d="M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19"/>
+                    <line x1="1" y1="1" x2="23" y2="23"/>
+                  </svg>
+                }
+              </button>
+            </div>
+          </div>
+          <div class="field" [class.field-hidden]="!cv().contact.visibility.phone">
+            <label>Teléfono</label>
+            <div class="input-with-action">
+              <input [ngModel]="cv().contact.phone" (ngModelChange)="store.updateContact({ phone: $event })" />
+              <button
+                type="button"
+                class="icon-btn"
+                [title]="cv().contact.visibility.phone ? 'Ocultar en el CV' : 'Mostrar en el CV'"
+                (click)="store.toggleContactVisibility('phone')"
+              >
+                @if (cv().contact.visibility.phone) {
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+                    <circle cx="12" cy="12" r="3"/>
+                  </svg>
+                } @else {
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94"/>
+                    <path d="M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19"/>
+                    <line x1="1" y1="1" x2="23" y2="23"/>
+                  </svg>
+                }
+              </button>
+            </div>
+          </div>
+          <div class="field" [class.field-hidden]="!cv().contact.visibility.location">
+            <label>Ubicación</label>
+            <div class="input-with-action">
+              <input [ngModel]="cv().contact.location" (ngModelChange)="store.updateContact({ location: $event })" />
+              <button
+                type="button"
+                class="icon-btn"
+                [title]="cv().contact.visibility.location ? 'Ocultar en el CV' : 'Mostrar en el CV'"
+                (click)="store.toggleContactVisibility('location')"
+              >
+                @if (cv().contact.visibility.location) {
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+                    <circle cx="12" cy="12" r="3"/>
+                  </svg>
+                } @else {
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94"/>
+                    <path d="M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19"/>
+                    <line x1="1" y1="1" x2="23" y2="23"/>
+                  </svg>
+                }
+              </button>
+            </div>
+          </div>
+          <div class="field" [class.field-hidden]="!cv().contact.visibility.linkedin">
+            <label>LinkedIn</label>
+            <div class="input-with-action">
+              <input [ngModel]="cv().contact.linkedin" (ngModelChange)="store.updateContact({ linkedin: $event })" />
+              <button
+                type="button"
+                class="icon-btn"
+                [title]="cv().contact.visibility.linkedin ? 'Ocultar en el CV' : 'Mostrar en el CV'"
+                (click)="store.toggleContactVisibility('linkedin')"
+              >
+                @if (cv().contact.visibility.linkedin) {
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+                    <circle cx="12" cy="12" r="3"/>
+                  </svg>
+                } @else {
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94"/>
+                    <path d="M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19"/>
+                    <line x1="1" y1="1" x2="23" y2="23"/>
+                  </svg>
+                }
+              </button>
+            </div>
+          </div>
+          <div class="field" [class.field-hidden]="!cv().contact.visibility.github">
+            <label>GitHub</label>
+            <div class="input-with-action">
+              <input [ngModel]="cv().contact.github" (ngModelChange)="store.updateContact({ github: $event })" />
+              <button
+                type="button"
+                class="icon-btn"
+                [title]="cv().contact.visibility.github ? 'Ocultar en el CV' : 'Mostrar en el CV'"
+                (click)="store.toggleContactVisibility('github')"
+              >
+                @if (cv().contact.visibility.github) {
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+                    <circle cx="12" cy="12" r="3"/>
+                  </svg>
+                } @else {
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94"/>
+                    <path d="M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19"/>
+                    <line x1="1" y1="1" x2="23" y2="23"/>
+                  </svg>
+                }
+              </button>
+            </div>
+          </div>
+          <div class="field" [class.field-hidden]="!cv().contact.visibility.website">
+            <label>Web</label>
+            <div class="input-with-action">
+              <input [ngModel]="cv().contact.website" (ngModelChange)="store.updateContact({ website: $event })" />
+              <button
+                type="button"
+                class="icon-btn"
+                [title]="cv().contact.visibility.website ? 'Ocultar en el CV' : 'Mostrar en el CV'"
+                (click)="store.toggleContactVisibility('website')"
+              >
+                @if (cv().contact.visibility.website) {
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+                    <circle cx="12" cy="12" r="3"/>
+                  </svg>
+                } @else {
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94"/>
+                    <path d="M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19"/>
+                    <line x1="1" y1="1" x2="23" y2="23"/>
+                  </svg>
+                }
+              </button>
+            </div>
+          </div>
+        </div>
+      }
+
+      @case ('experience') {
+        <div class="form-section" [class.section-hidden]="!isSectionVisible('experience')">
+          <div class="section-header">
+            <div class="section-title-row">
+              <h4>Experiencia laboral</h4>
+              <label class="switch" title="Mostrar / ocultar en el CV">
+                <input
+                  type="checkbox"
+                  [ngModel]="isSectionVisible('experience')"
+                  (ngModelChange)="toggleSection('experience', $event)"
+                />
+                <span class="slider"></span>
+              </label>
+            </div>
+            <button class="add-btn" (click)="store.addExperience()">+ Añadir</button>
+          </div>
+          @for (exp of cv().experience; track exp.id) {
+            <div class="entry-card">
+              <button class="remove-btn" (click)="store.removeExperience(exp.id)" title="Eliminar">×</button>
+              <div class="field">
+                <label>Puesto</label>
+                <input [ngModel]="exp.title" (ngModelChange)="store.updateExperience(exp.id, { title: $event })" />
+              </div>
+              <div class="field">
+                <label>Empresa</label>
+                <input [ngModel]="exp.company" (ngModelChange)="store.updateExperience(exp.id, { company: $event })" />
+              </div>
+              <div class="field-row">
+                <div class="field">
+                  <label>Inicio</label>
+                  <input [ngModel]="exp.startDate" (ngModelChange)="store.updateExperience(exp.id, { startDate: $event })" />
+                </div>
+                <div class="field">
+                  <label>Fin</label>
+                  <input
+                    [ngModel]="exp.endDate"
+                    (ngModelChange)="store.updateExperience(exp.id, { endDate: $event })"
+                    [disabled]="exp.current"
+                  />
+                </div>
+              </div>
+              <div class="field checkbox">
+                <label>
+                  <input
+                    type="checkbox"
+                    [ngModel]="exp.current"
+                    (ngModelChange)="store.updateExperience(exp.id, { current: $event })"
+                  />
+                  Trabajo actual
+                </label>
+              </div>
+              <div class="field">
+                <label>Ubicación</label>
+                <input [ngModel]="exp.location" (ngModelChange)="store.updateExperience(exp.id, { location: $event })" />
+              </div>
+              <div class="field">
+                <label>Logros</label>
+                @for (item of exp.achievements; track $index; let i = $index; let last = $last) {
+                  <div class="list-item list-item-textarea">
+                    <textarea
+                      rows="3"
+                      [ngModel]="item"
+                      (ngModelChange)="updateAchievement(exp.id, i, $event, exp.achievements)"
+                    ></textarea>
+                    <div class="item-actions">
+                      <button
+                        type="button"
+                        title="Subir"
+                        [disabled]="i === 0"
+                        (click)="moveAchievement(exp.id, i, -1, exp.achievements)"
+                      >↑</button>
+                      <button
+                        type="button"
+                        title="Bajar"
+                        [disabled]="last"
+                        (click)="moveAchievement(exp.id, i, 1, exp.achievements)"
+                      >↓</button>
+                      <button
+                        type="button"
+                        title="Eliminar"
+                        (click)="removeAchievement(exp.id, i, exp.achievements)"
+                      >×</button>
+                    </div>
+                  </div>
+                }
+                <button class="add-small" (click)="addAchievement(exp.id, exp.achievements)">+ Logro</button>
+              </div>
+            </div>
+          }
+        </div>
+      }
+
+      @case ('education') {
+        <div class="form-section" [class.section-hidden]="!isSectionVisible('education')">
+          <div class="section-header">
+            <div class="section-title-row">
+              <h4>Educación</h4>
+              <label class="switch" title="Mostrar / ocultar en el CV">
+                <input
+                  type="checkbox"
+                  [ngModel]="isSectionVisible('education')"
+                  (ngModelChange)="toggleSection('education', $event)"
+                />
+                <span class="slider"></span>
+              </label>
+            </div>
+            <button class="add-btn" (click)="store.addEducation()">+ Añadir</button>
+          </div>
+          @for (edu of cv().education; track edu.id) {
+            <div class="entry-card">
+              <button class="remove-btn" (click)="store.removeEducation(edu.id)" title="Eliminar">×</button>
+              <div class="field">
+                <label>Título</label>
+                <input [ngModel]="edu.degree" (ngModelChange)="store.updateEducation(edu.id, { degree: $event })" />
+              </div>
+              <div class="field">
+                <label>Institución</label>
+                <input [ngModel]="edu.institution" (ngModelChange)="store.updateEducation(edu.id, { institution: $event })" />
+              </div>
+              <div class="field-row">
+                <div class="field">
+                  <label>Inicio</label>
+                  <input [ngModel]="edu.startDate" (ngModelChange)="store.updateEducation(edu.id, { startDate: $event })" />
+                </div>
+                <div class="field">
+                  <label>Fin</label>
+                  <input [ngModel]="edu.endDate" (ngModelChange)="store.updateEducation(edu.id, { endDate: $event })" />
+                </div>
+              </div>
+              <div class="field">
+                <label>Ubicación</label>
+                <input [ngModel]="edu.location" (ngModelChange)="store.updateEducation(edu.id, { location: $event })" />
+              </div>
+              <div class="field">
+                <label>Detalles</label>
+                @for (item of edu.description; track item.id) {
+                  <div class="list-item list-item-textarea" [class.detail-hidden]="!item.visible">
+                    <textarea
+                      rows="3"
+                      [ngModel]="item.text"
+                      (ngModelChange)="updateEduDescription(edu.id, item.id, $event)"
+                    ></textarea>
+                    <div class="item-actions">
+                      <button
+                        type="button"
+                        class="icon-btn"
+                        [title]="item.visible ? 'Ocultar en el CV' : 'Mostrar en el CV'"
+                        (click)="toggleEduDescription(edu.id, item.id)"
+                      >
+                        @if (item.visible) {
+                          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+                            <circle cx="12" cy="12" r="3"/>
+                          </svg>
+                        } @else {
+                          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94"/>
+                            <path d="M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19"/>
+                            <line x1="1" y1="1" x2="23" y2="23"/>
+                          </svg>
+                        }
+                      </button>
+                      <button
+                        type="button"
+                        class="icon-btn danger"
+                        title="Eliminar"
+                        (click)="removeEduDescription(edu.id, item.id)"
+                      >
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                          <polyline points="3 6 5 6 21 6"/>
+                          <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/>
+                          <line x1="10" y1="11" x2="10" y2="17"/>
+                          <line x1="14" y1="11" x2="14" y2="17"/>
+                        </svg>
+                      </button>
+                    </div>
+                  </div>
+                }
+                <button class="add-small" (click)="addEduDescription(edu.id)">+ Detalle</button>
+              </div>
+            </div>
+          }
+        </div>
+      }
+
+      @case ('skills') {
+        <div class="form-section" [class.section-hidden]="!isSectionVisible('skills')">
+          <div class="section-header">
+            <div class="section-title-row">
+              <h4>Habilidades</h4>
+              <label class="switch" title="Mostrar / ocultar en el CV">
+                <input
+                  type="checkbox"
+                  [ngModel]="isSectionVisible('skills')"
+                  (ngModelChange)="toggleSection('skills', $event)"
+                />
+                <span class="slider"></span>
+              </label>
+            </div>
+            <button class="add-btn" (click)="store.addSkill()">+ Añadir</button>
+          </div>
+          @for (skill of cv().skills; track skill.id; let i = $index; let last = $last) {
+            <div class="list-item">
+              <input [ngModel]="skill.name" (ngModelChange)="store.updateSkill(skill.id, $event)" placeholder="Skill" />
+              <div class="item-actions">
+                <button
+                  type="button"
+                  title="Subir"
+                  [disabled]="i === 0"
+                  (click)="store.moveSkill(skill.id, -1)"
+                >↑</button>
+                <button
+                  type="button"
+                  title="Bajar"
+                  [disabled]="last"
+                  (click)="store.moveSkill(skill.id, 1)"
+                >↓</button>
+                <button type="button" title="Eliminar" (click)="store.removeSkill(skill.id)">×</button>
+              </div>
+            </div>
+          }
+        </div>
+      }
+
+      @case ('extra') {
+        <div class="form-section" [class.section-hidden]="!isSectionVisible('languages')">
+          <div class="section-header">
+            <div class="section-title-row">
+              <h4>Idiomas</h4>
+              <label class="switch" title="Mostrar / ocultar en el CV">
+                <input
+                  type="checkbox"
+                  [ngModel]="isSectionVisible('languages')"
+                  (ngModelChange)="toggleSection('languages', $event)"
+                />
+                <span class="slider"></span>
+              </label>
+            </div>
+            <button class="add-btn" (click)="store.addLanguage()">+ Añadir</button>
+          </div>
+          @for (lang of cv().languages; track lang.id) {
+            <div class="entry-card compact">
+              <button class="remove-btn" (click)="store.removeLanguage(lang.id)">×</button>
+              <div class="field-row">
+                <div class="field">
+                  <input [ngModel]="lang.name" (ngModelChange)="store.updateLanguage(lang.id, { name: $event })" placeholder="Idioma" />
+                </div>
+                <div class="field">
+                  <input [ngModel]="lang.level" (ngModelChange)="store.updateLanguage(lang.id, { level: $event })" placeholder="Nivel" />
+                </div>
+              </div>
+            </div>
+          }
+        </div>
+
+        <div class="form-section" [class.section-hidden]="!isSectionVisible('interests')">
+          <div class="section-header">
+            <div class="section-title-row">
+              <h4>Intereses</h4>
+              <label class="switch" title="Mostrar / ocultar en el CV">
+                <input
+                  type="checkbox"
+                  [ngModel]="isSectionVisible('interests')"
+                  (ngModelChange)="toggleSection('interests', $event)"
+                />
+                <span class="slider"></span>
+              </label>
+            </div>
+            <button class="add-btn" (click)="store.addInterest()">+ Añadir</button>
+          </div>
+          @for (interest of cv().interests; track interest.id) {
+            <div class="list-item">
+              <input [ngModel]="interest.name" (ngModelChange)="store.updateInterest(interest.id, $event)" placeholder="Interés" />
+              <button (click)="store.removeInterest(interest.id)">×</button>
+            </div>
+          }
+        </div>
+
+        <div class="form-section" [class.section-hidden]="!isSectionVisible('other')">
+          <div class="section-header">
+            <div class="section-title-row">
+              <h4>Otra información</h4>
+              <label class="switch" title="Mostrar / ocultar en el CV">
+                <input
+                  type="checkbox"
+                  [ngModel]="isSectionVisible('other')"
+                  (ngModelChange)="toggleSection('other', $event)"
+                />
+                <span class="slider"></span>
+              </label>
+            </div>
+            <button class="add-btn" (click)="store.addOtherInfo()">+ Añadir</button>
+          </div>
+          @for (item of cv().otherInfo; track $index) {
+            <div class="list-item">
+              <input
+                [ngModel]="item"
+                (ngModelChange)="store.updateOtherInfoItem($index, $event)"
+                placeholder="Información"
+              />
+              <button (click)="store.removeOtherInfo($index)">×</button>
+            </div>
+          }
+        </div>
+      }
+    }
+  </div>
+</div>
+
+@if (showCropper) {
+  <app-photo-cropper
+    [imageChangedEvent]="cropperEvent"
+    [imageSource]="cropperSource"
+    [photoShape]="cv().theme.photoShape"
+    (cropped)="onCropApplied($event)"
+    (cancelled)="closeCropper()"
+  />
+}

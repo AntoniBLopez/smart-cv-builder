@@ -1,0 +1,195 @@
+<div class="cv-page professional" [ngStyle]="styles">
+  <aside class="sidebar">
+    @if (cv.theme.showPhoto) {
+      <div class="photo-wrap">
+        @if (cv.personalInfo.photoUrl) {
+          <img [src]="cv.personalInfo.photoUrl" alt="Profile" [style.border-radius]="photoRadius" />
+        } @else {
+          <div class="photo-placeholder" [style.border-radius]="photoRadius">
+            {{ cv.personalInfo.fullName.charAt(0) }}
+          </div>
+        }
+      </div>
+    }
+
+    <div class="contact-block">
+      @if (cv.contact.email && cv.contact.visibility.email) {
+        <div class="contact-item">
+          <span class="icon">✉</span>
+          <span>{{ cv.contact.email }}</span>
+        </div>
+      }
+      @if (cv.contact.phone && cv.contact.visibility.phone) {
+        <div class="contact-item">
+          <span class="icon">☎</span>
+          <span>{{ cv.contact.phone }}</span>
+        </div>
+      }
+      @if (cv.contact.location && cv.contact.visibility.location) {
+        <div class="contact-item">
+          <span class="icon icon-svg" aria-hidden="true">
+            <svg viewBox="0 0 24 24" width="12" height="12" fill="currentColor">
+              <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5a2.5 2.5 0 1 1 0-5 2.5 2.5 0 0 1 0 5z"/>
+            </svg>
+          </span>
+          <span>{{ cv.contact.location }}</span>
+        </div>
+      }
+      @if (cv.contact.linkedin && cv.contact.visibility.linkedin) {
+        <div class="contact-item">
+          <span class="icon">in</span>
+          <span>{{ cv.contact.linkedin }}</span>
+        </div>
+      }
+      @if (cv.contact.github && cv.contact.visibility.github) {
+        <div class="contact-item">
+          <span class="icon">⌘</span>
+          <span>{{ cv.contact.github }}</span>
+        </div>
+      }
+      @if (cv.contact.website && cv.contact.visibility.website) {
+        <div class="contact-item">
+          <span class="icon">🌐</span>
+          <span>{{ cv.contact.website }}</span>
+        </div>
+      }
+    </div>
+
+    @if (isVisible('skills') && cv.skills.length) {
+      <section class="sidebar-section">
+        <h3 class="section-title">Skills</h3>
+        <div class="skills-tags">
+          @for (skill of cv.skills; track skill.id) {
+            @if (skill.name) {
+              <span class="skill-tag">{{ skill.name }}</span>
+            }
+          }
+        </div>
+      </section>
+    }
+
+    @if (isVisible('languages') && cv.languages.length) {
+      <section class="sidebar-section">
+        <h3 class="section-title">Languages</h3>
+        @for (lang of cv.languages; track lang.id) {
+          @if (lang.name) {
+            <div class="lang-item">
+              <strong>{{ lang.name }}</strong>
+              @if (lang.level) {
+                <em>{{ lang.level }}</em>
+              }
+            </div>
+          }
+        }
+      </section>
+    }
+
+    @if (isVisible('interests') && cv.interests.length) {
+      <section class="sidebar-section">
+        <h3 class="section-title">Interests</h3>
+        <div class="interests-tags">
+          @for (interest of cv.interests; track interest.id) {
+            @if (interest.name) {
+              <span class="interest-tag">{{ interest.name }}</span>
+            }
+          }
+        </div>
+      </section>
+    }
+  </aside>
+
+  <main class="main-content">
+    <header class="header-block">
+      <h1>{{ cv.personalInfo.fullName }}</h1>
+      <h2>{{ cv.personalInfo.title }}</h2>
+      @if (isVisible('summary') && cv.personalInfo.summary) {
+        <p class="summary">{{ cv.personalInfo.summary }}</p>
+      }
+    </header>
+
+    @for (sectionType of orderedMainSections; track sectionType) {
+      @switch (sectionType) {
+        @case ('experience') {
+          @if (cv.experience.length) {
+            <section class="content-section">
+              <h3 class="section-title">Work Experience</h3>
+              @for (exp of cv.experience; track exp.id) {
+                <div class="entry">
+                  <div class="entry-header">
+                    <div>
+                      <h4 class="entry-title">{{ exp.title }}</h4>
+                      <strong class="entry-subtitle">{{ exp.company }}</strong>
+                    </div>
+                    <div class="entry-meta">
+                      <span>{{ formatDateRange(exp.startDate, exp.endDate, exp.current) }}</span>
+                      @if (exp.location) {
+                        <span class="location">{{ exp.location }}</span>
+                      }
+                    </div>
+                  </div>
+                  @if (exp.achievements.length) {
+                    <p class="sub-label">Achievements</p>
+                    <ul>
+                      @for (item of exp.achievements; track $index) {
+                        @if (item) {
+                          <li>{{ item }}</li>
+                        }
+                      }
+                    </ul>
+                  }
+                </div>
+              }
+            </section>
+          }
+        }
+        @case ('education') {
+          @if (cv.education.length) {
+            <section class="content-section">
+              <h3 class="section-title">Education</h3>
+              @for (edu of cv.education; track edu.id) {
+                <div class="entry">
+                  <div class="entry-header">
+                    <div>
+                      <h4 class="entry-title">{{ edu.degree }}</h4>
+                      <strong class="entry-subtitle">{{ edu.institution }}</strong>
+                    </div>
+                    <div class="entry-meta">
+                      <span>{{ formatDateRange(edu.startDate, edu.endDate, false) }}</span>
+                      @if (edu.location) {
+                        <span class="location">{{ edu.location }}</span>
+                      }
+                    </div>
+                  </div>
+                  @if (hasVisibleDetails(edu)) {
+                    <p class="sub-label">Knowledge</p>
+                    <ul class="education-list">
+                      @for (item of edu.description; track item.id) {
+                        @if (item.visible && item.text) {
+                          <li>{{ item.text }}</li>
+                        }
+                      }
+                    </ul>
+                  }
+                </div>
+              }
+            </section>
+          }
+        }
+        @case ('other') {
+          @if (cv.otherInfo.length) {
+            <section class="content-section">
+              <h3 class="section-title">Other Information</h3>
+              <ul class="other-list">
+                @for (item of cv.otherInfo; track $index) {
+                  @if (item) {
+                    <li>{{ item }}</li>
+                  }
+                }
+              </ul>
+            </section>
+          }
+        }
+      }
+    }
+  </main>
+</div>
