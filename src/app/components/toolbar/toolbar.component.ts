@@ -64,6 +64,13 @@ export class ToolbarComponent {
     this.activePanel = '';
   }
 
+  async createPrivateServiceCv(): Promise<void> {
+    const name = prompt('Nombre del CV de chófer:', 'CV Chófer personal');
+    if (name === null) return;
+    await this.store.createFromPreset('private-service', name.trim() || 'CV Chófer personal');
+    this.activePanel = '';
+  }
+
   startRenameFor(id: string, currentName: string): void {
     this.editingId = id;
     this.draftName = currentName;

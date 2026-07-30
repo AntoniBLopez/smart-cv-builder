@@ -67,7 +67,12 @@
   <div class="dropdown-panel documents-panel">
     <div class="docs-header">
       <strong>Mis CVs</strong>
-      <button type="button" class="create-btn" (click)="createCopy()">+ Crear nuevo (copia)</button>
+      <div class="docs-create-actions">
+        <button type="button" class="create-btn" (click)="createCopy()">+ Crear nuevo (copia)</button>
+        <button type="button" class="create-btn secondary" (click)="createPrivateServiceCv()">
+          + CV chófer personal
+        </button>
+      </div>
     </div>
 
     <div class="docs-list">
@@ -117,7 +122,10 @@
         </div>
       }
     </div>
-    <p class="docs-hint">Crear nuevo duplica el CV abierto (datos, diseño, orden y visibilidad).</p>
+    <p class="docs-hint">
+      «Crear nuevo» duplica el CV abierto. «CV chófer personal» crea un CV discreto
+      orientado a servicio privado / on-call (sin tocar tus CVs tech).
+    </p>
   </div>
 }
 

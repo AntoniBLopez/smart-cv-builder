@@ -10,6 +10,7 @@ import {
   Interest,
   CvSection,
   createDefaultCv,
+  createPrivateServiceCv,
   createId,
   cloneCv,
   normalizeCv,
@@ -49,7 +50,12 @@ export class CvStoreService {
   });
   private readonly readySignal = signal(false);
   private readonly syncErrorSignal = signal('');
-  private saveTimer: ReturnType<typeof setTimeout> | null = null;
+  /** Debounced save timers per document id */
+  private readonly saveTimers = new Map<string, ReturnType<typeof setTimeout>>();
+  /** Document ids currently flushing to the API */
+  private readonly savingIds = new Set<string>();
+  /** Dirty again while a save was in flight — flush once more when done */
+  private readonly resaveIds = new Set<string>();
   private bootPromise: Promise<void> | null = null;
 
   readonly documents = computed(() => this.librarySignal().documents);
@@ -179,26 +185,48 @@ export class CvStoreService {
   }
 
   private scheduleSave(id: string): void {
-    if (this.saveTimer) clearTimeout(this.saveTimer);
-    this.saveTimer = setTimeout(() => {
-      void this.persistDocument(id);
-    }, 450);
+    const prev = this.saveTimers.get(id);
+    if (prev) clearTimeout(prev);
+    // Wait until typing pauses so in-flight saves don't race with the caret.
+    this.saveTimers.set(
+      id,
+      setTimeout(() => {
+        this.saveTimers.delete(id);
+        void this.persistDocument(id);
+      }, 900)
+    );
   }
 
+  /**
+   * Persist local → API. Local state is the source of truth while editing:
+   * never replace the open document with the server response (that was
+   * overwriting keystrokes mid-type via one-way ngModel bindings).
+   */
   private async persistDocument(id: string): Promise<void> {
+    if (this.savingIds.has(id)) {
+      this.resaveIds.add(id);
+      return;
+    }
+
     const doc = this.librarySignal().documents.find((d) => d.id === id);
     if (!doc) return;
+
+    this.savingIds.add(id);
+    this.resaveIds.delete(id);
+
     try {
-      const saved = normalizeCv(await this.api.update(id, doc));
-      const lib = this.librarySignal();
-      this.setLibrary({
-        ...lib,
-        documents: lib.documents.map((d) => (d.id === id ? saved : d)),
-      });
+      await this.api.update(id, doc);
       this.syncErrorSignal.set('');
     } catch (error) {
       console.error(error);
       this.syncErrorSignal.set('Error al guardar en MongoDB');
+    } finally {
+      this.savingIds.delete(id);
+      if (this.resaveIds.has(id)) {
+        this.resaveIds.delete(id);
+        // Latest local snapshot after edits that landed during the request.
+        void this.persistDocument(id);
+      }
     }
   }
 
@@ -250,6 +278,30 @@ export class CvStoreService {
     }
   }
 
+  /** Creates a new CV from a preset (e.g. private chauffeur) and makes it active. */
+  async createFromPreset(
+    preset: 'default' | 'private-service',
+    name?: string
+  ): Promise<CvData | null> {
+    const draft =
+      preset === 'private-service'
+        ? createPrivateServiceCv(name || 'CV Chófer personal')
+        : createDefaultCv(name || 'Mi CV');
+    try {
+      const created = normalizeCv(await this.api.create(draft));
+      const lib = this.librarySignal();
+      this.setLibrary({
+        activeId: created.id,
+        documents: [created, ...lib.documents],
+      });
+      return created;
+    } catch (error) {
+      console.error(error);
+      this.syncErrorSignal.set('No se pudo crear el CV en MongoDB');
+      return null;
+    }
+  }
+
   renameActive(name: string): void {
     const trimmed = name.trim();
     if (!trimmed) return;
@@ -284,7 +336,11 @@ export class CvStoreService {
   }
 
   reset(): void {
-    const fresh = createDefaultCv(this.cv().name || 'Mi CV');
+    const current = this.cv();
+    const fresh =
+      current.templateId === 'private-service'
+        ? createPrivateServiceCv(current.name || 'CV Chófer personal')
+        : createDefaultCv(current.name || 'Mi CV');
     const lib = this.librarySignal();
     const currentId = lib.activeId;
     const replaced = { ...fresh, id: currentId };

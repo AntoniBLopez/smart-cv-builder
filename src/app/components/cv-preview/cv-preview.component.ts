@@ -16,6 +16,7 @@ import { TemplateClassicComponent } from '../../templates/template-classic/templ
 import { TemplateModernComponent } from '../../templates/template-modern/template-modern.component';
 import { TemplateCreativeComponent } from '../../templates/template-creative/template-creative.component';
 import { TemplateExecutiveComponent } from '../../templates/template-executive/template-executive.component';
+import { TemplatePrivateServiceComponent } from '../../templates/template-private-service/template-private-service.component';
 
 /** A4 at 96dpi — matches template width/min-height (794×1123) */
 export const A4_WIDTH_PX = 794;
@@ -31,6 +32,7 @@ export const A4_HEIGHT_PX = 1123;
     TemplateModernComponent,
     TemplateCreativeComponent,
     TemplateExecutiveComponent,
+    TemplatePrivateServiceComponent,
   ],
   templateUrl: './cv-preview.component.html',
   styleUrl: './cv-preview.component.scss',

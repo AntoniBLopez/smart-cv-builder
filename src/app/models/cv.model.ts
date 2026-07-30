@@ -1,4 +1,10 @@
-export type TemplateId = 'professional' | 'classic' | 'modern' | 'creative' | 'executive';
+export type TemplateId =
+  | 'professional'
+  | 'classic'
+  | 'modern'
+  | 'creative'
+  | 'executive'
+  | 'private-service';
 
 export type FontFamily = 'Roboto' | 'Open Sans' | 'Lato' | 'Merriweather' | 'Montserrat' | 'Inter';
 
@@ -155,7 +161,30 @@ export const TEMPLATES: TemplateMeta[] = [
   { id: 'modern', name: 'Modern', description: 'Clean minimal design', previewClass: 'preview-modern' },
   { id: 'creative', name: 'Creative', description: 'Bold asymmetric layout', previewClass: 'preview-creative' },
   { id: 'executive', name: 'Executive', description: 'Elegant dark header style', previewClass: 'preview-executive' },
+  {
+    id: 'private-service',
+    name: 'Private Service',
+    description: 'Discreet one-page layout for private household roles',
+    previewClass: 'preview-private-service',
+  },
 ];
+
+/** Quiet palette for ultra-luxury private service CVs (no flashy accents). */
+export const PRIVATE_SERVICE_THEME: CvTheme = {
+  primaryColor: '#2c2a26',
+  secondaryColor: '#5c5852',
+  accentColor: '#f3f1ec',
+  textColor: '#1f1d1a',
+  backgroundColor: '#ffffff',
+  sidebarColor: '#f7f5f1',
+  fontFamily: 'Merriweather',
+  fontSize: 12.5,
+  lineHeight: 1.45,
+  sectionSpacing: 18,
+  photoShape: 'square',
+  showPhoto: false,
+  sidebarWidth: 28,
+};
 
 export const FONT_OPTIONS: FontFamily[] = ['Roboto', 'Open Sans', 'Lato', 'Merriweather', 'Montserrat', 'Inter'];
 
@@ -302,6 +331,114 @@ export function createDefaultCv(name = 'Mi CV'): CvData {
     otherInfo: [
       'I motivate teammates to achieve shared goals, fostering a positive work environment.',
       'Business vision and proactivity in contributing ideas.',
+    ],
+  };
+}
+
+/**
+ * Preset CV for private chauffeur / household service roles.
+ * Content is tailored to HNW private-service postings; adapt dates and employers to your real experience.
+ */
+export function createPrivateServiceCv(name = 'CV Chófer personal'): CvData {
+  return {
+    id: createId(),
+    name,
+    updatedAt: new Date().toISOString(),
+    templateId: 'private-service',
+    theme: { ...PRIVATE_SERVICE_THEME },
+    sections: [
+      { id: createId(), type: 'summary', label: 'Perfil profesional', visible: true, order: 0 },
+      { id: createId(), type: 'experience', label: 'Experiencia laboral', visible: true, order: 1 },
+      { id: createId(), type: 'education', label: 'Formación y licencias', visible: true, order: 2 },
+      { id: createId(), type: 'languages', label: 'Idiomas', visible: true, order: 3 },
+      { id: createId(), type: 'skills', label: 'Competencias clave', visible: true, order: 4 },
+      { id: createId(), type: 'other', label: 'Disponibilidad', visible: true, order: 5 },
+      { id: createId(), type: 'interests', label: 'Intereses', visible: false, order: 6 },
+    ],
+    personalInfo: {
+      fullName: 'Antoni Bassols López',
+      title:
+        'Chófer personal · Carné B vigente · +3 años en servicio privado · Disponibilidad freelance / on-call',
+      summary:
+        'Chófer personal con más de 3 años de experiencia en servicio privado y ejecutivo de alto nivel. Especializado en transporte discreto, puntual y anticipativo para hogares HNW y clientes exigentes en Barcelona y alrededores. Combino dominio impecable de la conducción, conocimiento exhaustivo de la ciudad y absoluta confidencialidad. Disponible de forma flexible (madrugadas, noches y última hora) con el mismo estándar de excelencia en cada servicio.',
+      photoUrl: '',
+    },
+    contact: {
+      email: 'antonilopezdev@gmail.com',
+      phone: '+34 691788761',
+      location: 'Barcelona, España',
+      linkedin: '',
+      github: '',
+      website: '',
+      visibility: {
+        email: true,
+        phone: true,
+        location: true,
+        linkedin: false,
+        github: false,
+        website: false,
+      },
+    },
+    experience: [
+      {
+        id: createId(),
+        title: 'Chófer personal (freelance / on-call)',
+        company: 'Hogares privados HNW y servicio ejecutivo',
+        location: 'Barcelona y alrededores',
+        startDate: '06/2023',
+        endDate: '',
+        current: true,
+        achievements: [
+          'Proporcionar transporte seguro, cómodo y puntual al principal, familiares y huéspedes por Barcelona y alrededores.',
+          'Planificar rutas y horarios con antelación, anticipando tráfico, eventos y cambios de última hora; llegada sistemática con margen de tiempo.',
+          'Mantener la flota en condiciones impecables: limpieza, mantenimiento periódico y documentación siempre al día.',
+          'Apoyar la logística entre propiedades del hogar (transporte de objetos y paquetes) y coordinar con el resto del personal según necesidad.',
+          'Mantener discreción absoluta respecto a agenda, desplazamientos y asuntos personales en todo momento.',
+          'Adaptarse con serenidad a mañanas tempranas, tardes-noche y solicitudes de última hora, manteniendo el mismo nivel de excelencia en cada colaboración.',
+        ],
+      },
+    ],
+    education: [
+      {
+        id: createId(),
+        degree: 'Carné de conducir B — vigente y válido en España',
+        institution: 'Historial de conducción limpio',
+        location: '',
+        startDate: '',
+        endDate: '',
+        description: [
+          {
+            id: createId(),
+            text: 'Sin infracciones relevantes. Experiencia consolidada al volante en entorno urbano e interurbano.',
+            visible: true,
+          },
+          {
+            id: createId(),
+            text: 'Gestión documental de vehículos: ITV, seguros y revisiones al día.',
+            visible: true,
+          },
+        ],
+      },
+    ],
+    skills: [
+      { id: createId(), name: 'Conocimiento profundo de Barcelona y alrededores' },
+      { id: createId(), name: 'Anticipación de necesidades y gestión de imprevistos' },
+      { id: createId(), name: 'Discreción y confidencialidad absolutas' },
+      { id: createId(), name: 'Flexibilidad horaria total (on-call)' },
+      { id: createId(), name: 'Mantenimiento de vehículos y gestión documental' },
+      { id: createId(), name: 'Presencia calmada en entornos de ultra-lujo' },
+      { id: createId(), name: 'Planificación de rutas bajo presión de tiempo' },
+      { id: createId(), name: 'Coordinación logística con personal de hogar' },
+    ],
+    languages: [
+      { id: createId(), name: 'Español', level: 'Nativo' },
+      { id: createId(), name: 'Catalán', level: 'Nativo' },
+      { id: createId(), name: 'Inglés', level: 'B2' },
+    ],
+    interests: [],
+    otherInfo: [
+      'Disponibilidad completa para servicios on-call según el calendario del hogar, incluyendo mañanas tempranas, tardes-noche y fines de semana.',
+      'Referencias disponibles bajo petición.',
     ],
   };
 }
