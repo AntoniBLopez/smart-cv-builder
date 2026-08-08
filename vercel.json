@@ -1,0 +1,9 @@
+{
+  "installCommand": "pnpm install && pnpm --dir server install --ignore-workspace",
+  "buildCommand": "pnpm run build",
+  "outputDirectory": "dist/cv-builder/browser",
+  "rewrites": [
+    { "source": "/api/(.*)", "destination": "/api" },
+    { "source": "/((?!api/).*)", "destination": "/index.html" }
+  ]
+}
