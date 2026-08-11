@@ -302,6 +302,24 @@ export class CvStoreService {
     }
   }
 
+  /** Creates a new CV document from adapted ATS content and makes it active. */
+  async createFromAdapted(adapted: CvData, name?: string): Promise<CvData | null> {
+    const draft = cloneCv(adapted, name);
+    try {
+      const created = normalizeCv(await this.api.create(draft));
+      const lib = this.librarySignal();
+      this.setLibrary({
+        activeId: created.id,
+        documents: [created, ...lib.documents],
+      });
+      return created;
+    } catch (error) {
+      console.error(error);
+      this.syncErrorSignal.set('No se pudo crear el CV adaptado en MongoDB');
+      return null;
+    }
+  }
+
   renameActive(name: string): void {
     const trimmed = name.trim();
     if (!trimmed) return;

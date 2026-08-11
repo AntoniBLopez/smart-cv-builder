@@ -183,8 +183,10 @@ Rules:
 
 /**
  * Tries each provider/key in order until one succeeds.
+ * @param {string} userPrompt
+ * @param {string} [systemPrompt]
  */
-export async function completeJsonWithFailover(userPrompt) {
+export async function completeJsonWithFailover(userPrompt, systemPrompt = SYSTEM_PROMPT) {
   const queue = buildProviderQueue();
   if (!queue.length) {
     throw new Error('No AI API keys configured in server/.env');
@@ -193,7 +195,7 @@ export async function completeJsonWithFailover(userPrompt) {
   const errors = [];
   for (const entry of queue) {
     try {
-      const content = await callProvider(entry, SYSTEM_PROMPT, userPrompt);
+      const content = await callProvider(entry, systemPrompt, userPrompt);
       const parsed = extractJson(content);
       return {
         analysis: parsed,
@@ -210,3 +212,42 @@ export async function completeJsonWithFailover(userPrompt) {
   const detail = errors.map((e) => `${e.keyLabel}: ${e.message}`).join(' | ');
   throw new Error(`All AI providers failed. ${detail}`);
 }
+
+export const ATS_ADAPT_SYSTEM_PROMPT = `You are an expert resume writer specializing in ATS optimization.
+Your job is to lightly adapt an existing CV so it aligns with a Job Description — without inventing a new career story.
+
+Return ONLY valid JSON with this exact shape:
+{
+  "personalInfo": {
+    "title": string,
+    "summary": string
+  },
+  "experience": [
+    {
+      "id": string,
+      "title": string,
+      "achievements": string[]
+    }
+  ],
+  "skills": [
+    { "id": string, "name": string }
+  ],
+  "education": [
+    {
+      "id": string,
+      "description": [ { "id": string, "text": string } ]
+    }
+  ],
+  "otherInfo": string[]
+}
+
+Hard rules:
+- Keep the same language as the CV (Spanish or English). Do not switch language.
+- Preserve every experience/education/skill id exactly. Do not add or remove jobs, degrees, or invent employers, dates, tools, or achievements the candidate never had.
+- You MAY lightly rewrite titles, summary, bullet wording, and skill labels to surface relevant keywords from the JD and improve marketing clarity.
+- Prefer keeping the same number of bullets per role. You may rephrase; do not fabricate metrics or responsibilities.
+- You MAY reorder or lightly rename skills to match JD wording when truthful. You may add at most 2–3 skill names only if clearly implied by existing experience wording.
+- Do NOT invent certifications, languages, or companies.
+- Keep changes coherent and conservative: optimize for ATS keywords + clear value sell, not a total rewrite.
+- company, location, dates, contact, photo, theme, templateId must NOT appear in the JSON (only the fields above).
+- Do not include markdown outside JSON.`;

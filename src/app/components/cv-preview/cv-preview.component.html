@@ -85,22 +85,22 @@
 <ng-template #cvTemplate>
   @switch (templateId()) {
     @case ('professional') {
-      <app-template-professional [cv]="cv()" />
+      <app-template-professional [cv]="cv()" [originalCv]="null" />
     }
     @case ('classic') {
-      <app-template-classic [cv]="cv()" />
+      <app-template-classic [cv]="cv()" [originalCv]="null" />
     }
     @case ('modern') {
-      <app-template-modern [cv]="cv()" />
+      <app-template-modern [cv]="cv()" [originalCv]="null" />
     }
     @case ('creative') {
-      <app-template-creative [cv]="cv()" />
+      <app-template-creative [cv]="cv()" [originalCv]="null" />
     }
     @case ('executive') {
-      <app-template-executive [cv]="cv()" />
+      <app-template-executive [cv]="cv()" [originalCv]="null" />
     }
     @case ('private-service') {
-      <app-template-private-service [cv]="cv()" />
+      <app-template-private-service [cv]="cv()" [originalCv]="null" />
     }
   }
 </ng-template>

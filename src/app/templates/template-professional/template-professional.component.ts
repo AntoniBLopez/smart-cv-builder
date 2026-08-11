@@ -1,32 +1,17 @@
-import { Component, Input } from '@angular/core';
+import { Component } from '@angular/core';
 import { NgStyle } from '@angular/common';
-import { CvData, CvSection, EducationEntry } from '../../models/cv.model';
-import { getThemeStyles, formatDateRange, photoBorderRadius } from '../../utils/theme.utils';
+import { CvSection, EducationEntry } from '../../models/cv.model';
+import { DiffTextComponent } from '../../components/diff-text/diff-text.component';
+import { CvTemplateBase } from '../cv-template-base';
 
 @Component({
   selector: 'app-template-professional',
   standalone: true,
-  imports: [NgStyle],
+  imports: [NgStyle, DiffTextComponent],
   templateUrl: './template-professional.component.html',
   styleUrl: './template-professional.component.scss',
 })
-export class TemplateProfessionalComponent {
-  @Input({ required: true }) cv!: CvData;
-
-  get styles() {
-    return getThemeStyles(this.cv.theme);
-  }
-
-  get photoRadius() {
-    return photoBorderRadius(this.cv.theme.photoShape);
-  }
-
-  formatDateRange = formatDateRange;
-
-  isVisible(type: CvSection['type']): boolean {
-    return this.cv.sections.find((s) => s.type === type)?.visible ?? true;
-  }
-
+export class TemplateProfessionalComponent extends CvTemplateBase {
   hasVisibleDetails(edu: EducationEntry): boolean {
     return edu.description.some((d) => d.visible && !!d.text);
   }

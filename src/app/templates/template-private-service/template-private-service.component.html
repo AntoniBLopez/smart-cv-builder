@@ -15,7 +15,9 @@
       <div class="identity">
         <h1>{{ cv.personalInfo.fullName }}</h1>
         @if (cv.personalInfo.title) {
-          <p class="role">{{ cv.personalInfo.title }}</p>
+          <p class="role">
+            <app-diff-text [text]="cv.personalInfo.title" [original]="origTitle()" [diff]="showDiff" />
+          </p>
         }
       </div>
     </div>
@@ -48,7 +50,9 @@
         @if (cv.personalInfo.summary) {
           <section class="section">
             <h3 class="section-title">{{ section.label }}</h3>
-            <p class="summary">{{ cv.personalInfo.summary }}</p>
+            <p class="summary">
+              <app-diff-text [text]="cv.personalInfo.summary" [original]="origSummary()" [diff]="showDiff" />
+            </p>
           </section>
         }
       }
@@ -59,7 +63,13 @@
             @for (exp of cv.experience; track exp.id) {
               <div class="entry">
                 <div class="entry-row">
-                  <strong class="entry-title">{{ exp.title }}</strong>
+                  <strong class="entry-title">
+                    <app-diff-text
+                      [text]="exp.title"
+                      [original]="origExp(exp.id)?.title"
+                      [diff]="showDiff"
+                    />
+                  </strong>
                   <span class="entry-date">{{ formatDateRange(exp.startDate, exp.endDate, exp.current) }}</span>
                 </div>
                 <div class="entry-row meta">
@@ -71,7 +81,13 @@
                 <ul>
                   @for (item of exp.achievements; track $index) {
                     @if (item) {
-                      <li>{{ item }}</li>
+                      <li>
+                        <app-diff-text
+                          [text]="item"
+                          [original]="origAchievement(exp.id, $index)"
+                          [diff]="showDiff"
+                        />
+                      </li>
                     }
                   }
                 </ul>
@@ -99,7 +115,13 @@
                 <ul>
                   @for (item of edu.description; track item.id) {
                     @if (item.visible && item.text) {
-                      <li>{{ item.text }}</li>
+                      <li>
+                        <app-diff-text
+                          [text]="item.text"
+                          [original]="origEduText(edu.id, item.id)"
+                          [diff]="showDiff"
+                        />
+                      </li>
                     }
                   }
                 </ul>
@@ -115,7 +137,13 @@
             <ul class="competencies">
               @for (skill of cv.skills; track skill.id) {
                 @if (skill.name) {
-                  <li>{{ skill.name }}</li>
+                  <li>
+                    <app-diff-text
+                      [text]="skill.name"
+                      [original]="isNewSkill(skill.id) ? '' : origSkillName(skill.id)"
+                      [diff]="showDiff"
+                    />
+                  </li>
                 }
               }
             </ul>
@@ -160,7 +188,9 @@
             <ul class="other-list">
               @for (item of cv.otherInfo; track $index) {
                 @if (item) {
-                  <li>{{ item }}</li>
+                  <li>
+                    <app-diff-text [text]="item" [original]="origOther($index)" [diff]="showDiff" />
+                  </li>
                 }
               }
             </ul>

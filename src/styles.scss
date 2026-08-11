@@ -70,7 +70,8 @@ button {
   app-cv-preview,
   .preview-wrapper,
   .preview-scroll,
-  .cv-render {
+  .cv-render,
+  .export-render {
     display: block !important;
     width: auto !important;
     height: auto !important;
@@ -90,6 +91,47 @@ button {
     height: auto !important;
     margin: 0 auto !important;
     box-shadow: none !important;
+    overflow: visible !important;
+  }
+
+  /* ATS adapted download: only the clean export host (no green/red marks) */
+  body.cv-print-ats .workspace,
+  body.cv-print-ats app-cv-preview,
+  body.cv-print-ats .cv-measure-host,
+  body.cv-print-ats app-ats-analyze-dialog .ats-header,
+  body.cv-print-ats app-ats-analyze-dialog .ats-body > label,
+  body.cv-print-ats app-ats-analyze-dialog .action-row,
+  body.cv-print-ats app-ats-analyze-dialog .results,
+  body.cv-print-ats app-ats-analyze-dialog .error,
+  body.cv-print-ats app-ats-analyze-dialog .adapt-preview-header,
+  body.cv-print-ats app-ats-analyze-dialog .preview-scroll {
+    display: none !important;
+  }
+
+  body.cv-print-ats app-ats-analyze-dialog .ats-backdrop {
+    position: static !important;
+    inset: auto !important;
+    background: transparent !important;
+    padding: 0 !important;
+    overflow: visible !important;
+    display: block !important;
+  }
+
+  body.cv-print-ats app-ats-analyze-dialog .ats-dialog {
+    width: auto !important;
+    max-width: none !important;
+    background: transparent !important;
+    border: none !important;
+    box-shadow: none !important;
+  }
+
+  body.cv-print-ats app-ats-analyze-dialog .export-host {
+    position: static !important;
+    left: auto !important;
+    opacity: 1 !important;
+    pointer-events: auto !important;
+    width: auto !important;
+    height: auto !important;
     overflow: visible !important;
   }
 }

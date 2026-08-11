@@ -35,6 +35,14 @@ export interface AtsAnalyzeResponse {
   };
 }
 
+export interface AtsAdaptResponse {
+  adaptedCv: CvData;
+  meta: {
+    used: { provider: string; model: string; keyLabel: string };
+    failedAttempts: number;
+  };
+}
+
 @Injectable({ providedIn: 'root' })
 export class AtsAiService {
   constructor(private http: HttpClient) {}
@@ -46,6 +54,17 @@ export class AtsAiService {
   }): Promise<AtsAnalyzeResponse> {
     return firstValueFrom(
       this.http.post<AtsAnalyzeResponse>(`${environment.apiUrl}/ai/ats-analyze`, payload)
+    );
+  }
+
+  adapt(payload: {
+    cv: CvData;
+    jobDescription: string;
+    companyUrl?: string;
+    analysis?: AtsAnalysis | null;
+  }): Promise<AtsAdaptResponse> {
+    return firstValueFrom(
+      this.http.post<AtsAdaptResponse>(`${environment.apiUrl}/ai/ats-adapt`, payload)
     );
   }
 }

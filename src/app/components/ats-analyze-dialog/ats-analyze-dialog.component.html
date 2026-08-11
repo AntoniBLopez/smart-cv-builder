@@ -1,5 +1,10 @@
 <div class="ats-backdrop" (click)="onBackdrop($event)">
-  <div class="ats-dialog" role="dialog" aria-labelledby="ats-title">
+  <div
+    class="ats-dialog"
+    [class.wide]="!!adaptedCv()"
+    role="dialog"
+    aria-labelledby="ats-title"
+  >
     <header class="ats-header">
       <div>
         <h2 id="ats-title">
@@ -38,13 +43,15 @@
         <p class="error">{{ error() }}</p>
       }
 
-      <button type="button" class="analyze-btn" (click)="analyze()" [disabled]="loading()">
-        @if (loading()) {
-          Analizando…
-        } @else {
-          Analizar CV vs oferta
-        }
-      </button>
+      <div class="action-row">
+        <button type="button" class="analyze-btn" (click)="analyze()" [disabled]="loading() || adapting()">
+          @if (loading()) {
+            Analizando…
+          } @else {
+            Analizar CV vs oferta
+          }
+        </button>
+      </div>
 
       @if (analysis(); as a) {
         <section class="results">
@@ -141,6 +148,75 @@
                 <li>{{ tip }}</li>
               }
             </ul>
+          </div>
+
+          <div class="adapt-cta">
+            <button
+              type="button"
+              class="adapt-btn"
+              (click)="generateAdaptedPreview()"
+              [disabled]="adapting() || loading()"
+            >
+              @if (adapting()) {
+                Generando vista previa…
+              } @else if (adaptedCv()) {
+                Regenerar CV adaptado
+              } @else {
+                Generar vista previa del CV adaptado
+              }
+            </button>
+            <p class="adapt-hint">
+              Reescribe de forma conservadora título, resumen, bullets y skills para alinear keywords
+              con la oferta — sin inventar experiencia.
+            </p>
+          </div>
+        </section>
+      }
+
+      @if (adaptedCv(); as adapted) {
+        <section class="adapt-preview">
+          <div class="adapt-preview-header">
+            <div>
+              <h3>Vista previa adaptada</h3>
+              <p class="legend">
+                <span class="lg add">Verde = texto nuevo / añadido</span>
+                <span class="lg del">Rojo = texto sustituido</span>
+                <span class="lg note">Los colores solo se ven aquí, no en el PDF</span>
+              </p>
+              @if (adaptMeta()) {
+                <p class="meta">{{ adaptMeta() }}</p>
+              }
+            </div>
+            <div class="adapt-actions">
+              <button
+                type="button"
+                class="btn-copy"
+                (click)="createAdaptedCopy()"
+                [disabled]="savingCopy()"
+              >
+                @if (savingCopy()) {
+                  Creando…
+                } @else {
+                  Crear copia con estos textos
+                }
+              </button>
+              <button type="button" class="btn-download" (click)="downloadAdapted()">
+                Descargar PDF
+              </button>
+            </div>
+          </div>
+
+          <div class="preview-scroll">
+            <div class="preview-sheet">
+              <app-ats-cv-frame [cv]="adapted" [originalCv]="originalCv()" />
+            </div>
+          </div>
+
+          <!-- Clean render for print/PDF (no diff highlights) -->
+          <div class="export-host" aria-hidden="true">
+            <div #exportHost class="export-render" id="ats-export-target">
+              <app-ats-cv-frame [cv]="adapted" [originalCv]="null" />
+            </div>
           </div>
         </section>
       }
