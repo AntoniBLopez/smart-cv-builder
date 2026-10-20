@@ -29,7 +29,7 @@ test('english experience bullets are copied from the existing CV', () => {
   }
   assert.ok(cvSource.includes('Antoni Bassols López'));
   assert.ok(cvSource.includes('antonilopezdev@gmail.com'));
-  assert.ok(cvSource.includes('/images/photo-cv.jpg'));
+  assert.ok(cvSource.includes('/images/photo.jpg'));
 });
 
 test('defaults put the frontend role first and highlight interface bullets', () => {
