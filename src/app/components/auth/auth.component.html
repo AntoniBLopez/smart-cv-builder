@@ -5,9 +5,21 @@
       {{ mode() === 'login' ? 'Inicia sesión para gestionar tus CVs' : 'Crea tu cuenta' }}
     </p>
 
+    @if (sessionExpired()) {
+      <p class="session-notice" role="status">Tu sesión ha expirado. Vuelve a iniciar sesión.</p>
+    }
+
     <div class="tabs">
-      <button type="button" [class.active]="mode() === 'login'" (click)="switchMode('login')">
+      <button
+        type="button"
+        [class.active]="mode() === 'login'"
+        [class.is-last]="lastMethod() === 'email'"
+        (click)="switchMode('login')"
+      >
         Entrar
+        @if (lastMethod() === 'email') {
+          <app-last-used-badge />
+        }
       </button>
       <button type="button" [class.active]="mode() === 'register'" (click)="switchMode('register')">
         Registrarse
@@ -15,13 +27,22 @@
     </div>
 
     @if (googleReady()) {
-      <div class="google-wrap">
+      <div class="google-wrap" [class.is-last]="lastMethod() === 'google'">
+        @if (lastMethod() === 'google') {
+          <app-last-used-badge />
+        }
         <div #googleBtn class="google-btn"></div>
+      </div>
+      <div class="divider"><span>o con email</span></div>
+    } @else if (lastMethod() === 'google') {
+      <div class="google-wrap is-last">
+        <app-last-used-badge />
+        <span class="provider-name">Google</span>
       </div>
       <div class="divider"><span>o con email</span></div>
     }
 
-    <form (ngSubmit)="submit()">
+    <form (ngSubmit)="submit()" [class.is-last]="lastMethod() === 'email' && mode() === 'login'">
       @if (mode() === 'register') {
         <label>
           Nombre

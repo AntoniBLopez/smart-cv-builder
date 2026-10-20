@@ -15,6 +15,7 @@ import {
   cloneCv,
   normalizeCv,
 } from '../models/cv.model';
+import { isUnauthorizedHttpError } from '../auth/session-token';
 import { CvApiService } from './cv-api.service';
 import { AuthService } from './auth.service';
 
@@ -43,6 +44,10 @@ const LOCAL_LEGACY_KEYS = [
 export class CvStoreService {
   private api = inject(CvApiService);
   private auth = inject(AuthService);
+
+  constructor() {
+    this.auth.registerSessionCleanup(() => this.dropSessionCache());
+  }
 
   private readonly librarySignal = signal<CvLibrary>({
     activeId: '',
@@ -91,20 +96,23 @@ export class CvStoreService {
           const created = await this.api.create(createDefaultCv('Mi CV'));
           docs = [normalizeCv(created)];
         }
+        if (!this.auth.isAuthenticated()) return;
         this.librarySignal.set({
           activeId: docs[0].id,
           documents: docs,
         });
         this.readySignal.set(true);
       } catch (error) {
+        if (isUnauthorizedHttpError(error)) {
+          this.readySignal.set(false);
+          return;
+        }
         console.error(error);
         const status = (error as { status?: number })?.status;
         const msg =
           status === 0 || status === undefined
             ? 'No se pudo conectar con la API (¿está corriendo en :3000?). Usa `pnpm run start:api`.'
-            : status === 401
-              ? 'Sesión expirada. Vuelve a iniciar sesión.'
-              : 'No se pudieron cargar tus CVs desde el servidor';
+            : 'No se pudieron cargar tus CVs desde el servidor';
         this.syncErrorSignal.set(msg);
         this.readySignal.set(true);
       } finally {
@@ -140,8 +148,8 @@ export class CvStoreService {
       this.clearLocalCvStorage();
       return (await this.api.list()).map((d) => normalizeCv(d));
     } catch (error) {
-      console.error('Local CV migration failed', error);
-      this.syncErrorSignal.set(
+      this.reportSyncError(
+        error,
         'No se pudieron migrar los CVs locales. Recarga e inténtalo de nuevo.'
       );
       return remoteDocs;
@@ -178,6 +186,24 @@ export class CvStoreService {
       localStorage.removeItem(key);
     }
     localStorage.removeItem(LOCAL_LIBRARY_KEY);
+  }
+
+  private reportSyncError(error: unknown, message: string): void {
+    console.error(error);
+    if (isUnauthorizedHttpError(error)) return;
+    this.syncErrorSignal.set(message);
+  }
+
+  /** Forget in-memory CVs when the session is cleared so the next account starts clean. */
+  private dropSessionCache(): void {
+    for (const timer of this.saveTimers.values()) clearTimeout(timer);
+    this.saveTimers.clear();
+    this.savingIds.clear();
+    this.resaveIds.clear();
+    this.bootPromise = null;
+    this.librarySignal.set({ activeId: '', documents: [] });
+    this.readySignal.set(false);
+    this.syncErrorSignal.set('');
   }
 
   private setLibrary(library: CvLibrary): void {
@@ -218,8 +244,7 @@ export class CvStoreService {
       await this.api.update(id, doc);
       this.syncErrorSignal.set('');
     } catch (error) {
-      console.error(error);
-      this.syncErrorSignal.set('Error al guardar en MongoDB');
+      this.reportSyncError(error, 'Error al guardar en MongoDB');
     } finally {
       this.savingIds.delete(id);
       if (this.resaveIds.has(id)) {
@@ -259,6 +284,7 @@ export class CvStoreService {
       });
       return created;
     } catch (error) {
+      if (isUnauthorizedHttpError(error)) return null;
       console.error(error);
       // Fallback: local clone then create remotely
       const copy = cloneCv(current, name);
@@ -271,8 +297,7 @@ export class CvStoreService {
         });
         return created;
       } catch (err) {
-        console.error(err);
-        this.syncErrorSignal.set('No se pudo crear la copia en MongoDB');
+        this.reportSyncError(err, 'No se pudo crear la copia en MongoDB');
         return null;
       }
     }
@@ -296,8 +321,7 @@ export class CvStoreService {
       });
       return created;
     } catch (error) {
-      console.error(error);
-      this.syncErrorSignal.set('No se pudo crear el CV en MongoDB');
+      this.reportSyncError(error, 'No se pudo crear el CV en MongoDB');
       return null;
     }
   }
@@ -314,8 +338,7 @@ export class CvStoreService {
       });
       return created;
     } catch (error) {
-      console.error(error);
-      this.syncErrorSignal.set('No se pudo crear el CV adaptado en MongoDB');
+      this.reportSyncError(error, 'No se pudo crear el CV adaptado en MongoDB');
       return null;
     }
   }
@@ -348,8 +371,7 @@ export class CvStoreService {
       const activeId = lib.activeId === id ? documents[0].id : lib.activeId;
       this.setLibrary({ activeId, documents });
     } catch (error) {
-      console.error(error);
-      this.syncErrorSignal.set('No se pudo eliminar el CV');
+      this.reportSyncError(error, 'No se pudo eliminar el CV');
     }
   }
 
