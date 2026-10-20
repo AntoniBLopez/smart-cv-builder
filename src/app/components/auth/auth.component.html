@@ -10,16 +10,8 @@
     }
 
     <div class="tabs">
-      <button
-        type="button"
-        [class.active]="mode() === 'login'"
-        [class.is-last]="lastMethod() === 'email'"
-        (click)="switchMode('login')"
-      >
+      <button type="button" [class.active]="mode() === 'login'" (click)="switchMode('login')">
         Entrar
-        @if (lastMethod() === 'email') {
-          <app-last-used-badge />
-        }
       </button>
       <button type="button" [class.active]="mode() === 'register'" (click)="switchMode('register')">
         Registrarse
@@ -27,22 +19,20 @@
     </div>
 
     @if (googleReady()) {
-      <div class="google-wrap" [class.is-last]="lastMethod() === 'google'">
-        @if (lastMethod() === 'google') {
-          <app-last-used-badge />
-        }
-        <div #googleBtn class="google-btn"></div>
-      </div>
-      <div class="divider"><span>o con email</span></div>
-    } @else if (lastMethod() === 'google') {
-      <div class="google-wrap is-last">
-        <app-last-used-badge />
-        <span class="provider-name">Google</span>
+      <div class="google-wrap">
+        <div class="google-btn-slot">
+          <div #googleBtn class="google-btn"></div>
+          @if (lastMethod() === 'google') {
+            <div class="on-google-button">
+              <app-last-used-badge method="google" />
+            </div>
+          }
+        </div>
       </div>
       <div class="divider"><span>o con email</span></div>
     }
 
-    <form (ngSubmit)="submit()" [class.is-last]="lastMethod() === 'email' && mode() === 'login'">
+    <form (ngSubmit)="submit()">
       @if (mode() === 'register') {
         <label>
           Nombre
@@ -75,6 +65,12 @@
 
       @if (error()) {
         <p class="error">{{ error() }}</p>
+      }
+
+      @if (lastMethod() === 'email' && mode() === 'login') {
+        <div class="email-last-used">
+          <app-last-used-badge method="email" />
+        </div>
       }
 
       <button type="submit" class="submit" [disabled]="loading()">

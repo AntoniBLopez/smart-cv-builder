@@ -20,3 +20,8 @@ export function readLastSignInMethod(): SignInMethod | null {
 export function rememberSignInMethod(method: SignInMethod): void {
   writeBrowserStorage(LAST_SIGN_IN_KEY, method);
 }
+
+/** Copy placed on the control for that method. Email must name the method. */
+export function lastUsedLabel(method: SignInMethod): string {
+  return method === 'email' ? 'Último usado: email' : 'Último usado';
+}

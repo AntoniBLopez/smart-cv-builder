@@ -1,25 +1,32 @@
-import { Component } from '@angular/core';
+import { Component, computed, input } from '@angular/core';
+import { lastUsedLabel, SignInMethod } from '../../auth/last-sign-in';
 
-/** Small label for the sign-in option used on the previous successful login. */
+/** Label for the sign-in control used on the previous successful login. */
 @Component({
   selector: 'app-last-used-badge',
   standalone: true,
-  template: `<span class="last-used-badge">Último usado</span>`,
+  template: `<span class="last-used-badge">{{ label() }}</span>`,
   styles: `
+    :host {
+      display: inline-flex;
+    }
+
     .last-used-badge {
       display: inline-flex;
       align-items: center;
       padding: 2px 8px;
       border-radius: 999px;
-      background: rgba(93, 156, 236, 0.2);
-      color: #d6e6ff;
-      font-size: 0.65rem;
+      background: #5d9cec;
+      color: #fff;
+      font-size: 0.72rem;
       font-weight: 700;
-      letter-spacing: 0.04em;
+      letter-spacing: 0.01em;
       line-height: 1.4;
-      text-transform: uppercase;
       white-space: nowrap;
     }
   `,
 })
-export class LastUsedBadgeComponent {}
+export class LastUsedBadgeComponent {
+  readonly method = input<SignInMethod>('google');
+  readonly label = computed(() => lastUsedLabel(this.method()));
+}

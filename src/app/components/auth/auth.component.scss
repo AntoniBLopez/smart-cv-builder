@@ -46,11 +46,6 @@ h1 {
   margin-bottom: 18px;
 
   button {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    flex-wrap: wrap;
-    gap: 6px;
     background: #1e272e;
     border: 1px solid #3d3d3d;
     color: #b2bec3;
@@ -63,30 +58,27 @@ h1 {
       border-color: #5d9cec;
       background: rgba(93, 156, 236, 0.12);
     }
-
-    &.is-last {
-      border-color: #5d9cec;
-    }
   }
 }
 
 .google-wrap {
   display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 8px;
+  justify-content: center;
   margin-bottom: 4px;
-
-  &.is-last {
-    padding: 8px;
-    border: 1px solid #5d9cec;
-    border-radius: 10px;
-  }
 }
 
-.provider-name {
-  color: #dfe6e9;
-  font-size: 0.9em;
+.google-btn-slot {
+  position: relative;
+  width: min(360px, 100%);
+}
+
+.on-google-button {
+  position: absolute;
+  z-index: 2;
+  top: 50%;
+  right: 8px;
+  transform: translateY(-50%);
+  pointer-events: none;
 }
 
 .google-btn {
@@ -119,12 +111,12 @@ form {
   display: flex;
   flex-direction: column;
   gap: 12px;
+}
 
-  &.is-last {
-    padding: 10px;
-    border: 1px solid #5d9cec;
-    border-radius: 10px;
-  }
+.email-last-used {
+  display: flex;
+  justify-content: flex-end;
+  margin-bottom: -4px;
 }
 
 label {
