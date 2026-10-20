@@ -1,0 +1,49 @@
+{
+  "$schema": "./schema.json",
+  "_comment": "EXAMPLE DATA. company, role, recipient and coverLetter paragraphs are fictional and labelled EXAMPLE. CV skills, experience ids and bullet ids are real catalog entries from this repo, not invented employers.",
+  "language": "en",
+  "company": "Example Studio",
+  "role": "Frontend Developer",
+  "cv": {
+    "headline": "Frontend Developer",
+    "skills": [
+      "Angular",
+      "React",
+      "Next.js",
+      "JavaScript",
+      "TypeScript",
+      "Figma",
+      "Lovable",
+      "Cursor",
+      "Node.js",
+      "MongoDB",
+      "Databases SQL & NoSQL",
+      "Git with GitHub & GitLab",
+      "Diligent",
+      "Methodical",
+      "Ambitious"
+    ],
+    "experienceOrder": ["explorins", "mazars", "freelancer"],
+    "highlightBullets": [
+      "explorins-angular",
+      "explorins-benetton",
+      "mazars-stack",
+      "freelancer-bocabla"
+    ]
+  },
+  "coverLetter": {
+    "recipientName": "Example Hiring Manager",
+    "recipientTitle": "Head of Engineering",
+    "date": "2026-10-20",
+    "paragraphs": [
+      "EXAMPLE PARAGRAPH — this is not a real application. I am writing about the Frontend Developer role at Example Studio. I build responsive, scalable and maintainable interfaces, with a user-friendly UX/UI.",
+      "EXAMPLE PARAGRAPH — at eXplorins I used Angular 19 and TypeScript, including a dashboard for Benetton. At Forvis Mazars I worked with React 19 and TypeScript, and I also shipped an educational Next.js app at bocabla.com.",
+      "EXAMPLE PARAGRAPH — I would like to bring that frontend work to Example Studio. Thank you for considering this example letter."
+    ],
+    "hooks": [
+      "EXAMPLE HOOK — Angular 19, TypeScript and Playwright at eXplorins",
+      "EXAMPLE HOOK — React 19 and TypeScript at Forvis Mazars"
+    ],
+    "signature": "Antoni Bassols López"
+  }
+}

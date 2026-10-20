@@ -11,7 +11,9 @@
     "start:all": "mprocs",
     "build": "ng build",
     "watch": "ng build --watch --configuration development",
-    "test": "ng test"
+    "test": "ng test",
+    "generate": "node job-finder/generate.mjs",
+    "test:job-finder": "node --test job-finder/generate.test.mjs"
   },
   "private": true,
   "dependencies": {

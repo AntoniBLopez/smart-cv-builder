@@ -1,0 +1,127 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "job-finder/schema.json",
+  "title": "Job Finder CV and cover letter input",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["company", "role", "coverLetter"],
+  "properties": {
+    "$schema": { "type": "string" },
+    "_comment": { "type": "string" },
+    "language": {
+      "type": "string",
+      "enum": ["en", "es"],
+      "default": "en",
+      "description": "Section labels and which catalog wording to use. Defaults to en."
+    },
+    "company": { "type": "string", "minLength": 1, "maxLength": 80 },
+    "role": { "type": "string", "minLength": 1, "maxLength": 80 },
+    "cv": { "$ref": "#/$defs/cv" },
+    "coverLetter": { "$ref": "#/$defs/coverLetter" }
+  },
+  "$defs": {
+    "cv": {
+      "type": "object",
+      "additionalProperties": false,
+      "description": "Optional tailoring. Omitted fields use the frontend defaults from the catalog. Skill names and ids must already exist in the repo catalog.",
+      "properties": {
+        "headline": { "type": "string", "minLength": 1, "maxLength": 120 },
+        "summary": { "type": "string", "minLength": 1, "maxLength": 700 },
+        "skills": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": { "type": "string", "enum": [
+            "Angular", "React", "Next.js", "JavaScript", "TypeScript", "Figma",
+            "Lovable", "Cursor", "Node.js", "MongoDB", "Databases SQL & NoSQL",
+            "Git with GitHub & GitLab", "Diligent", "Methodical", "Ambitious"
+          ]}
+        },
+        "experienceOrder": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": { "type": "string", "enum": ["explorins", "mazars", "freelancer"] }
+        },
+        "bullets": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "explorins": { "$ref": "#/$defs/explorinsBullets" },
+            "mazars": { "$ref": "#/$defs/mazarsBullets" },
+            "freelancer": { "$ref": "#/$defs/freelancerBullets" }
+          }
+        },
+        "highlightBullets": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": { "type": "string", "enum": [
+            "explorins-angular", "explorins-ai", "explorins-benetton",
+            "mazars-stack", "mazars-lead", "mazars-platform",
+            "freelancer-bocabla", "freelancer-music"
+          ]}
+        },
+        "educationDetails": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": { "type": "string", "enum": ["edu-oracle", "edu-cs50", "edu-platzi", "edu-stack"] }
+        },
+        "interests": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": { "type": "string", "enum": ["AI", "ML", "DL", "GenAI", "LLM"] }
+        },
+        "otherInfo": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": { "type": "string", "enum": ["other-team", "other-business"] }
+        }
+      }
+    },
+    "explorinsBullets": {
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": { "type": "string", "enum": ["explorins-angular", "explorins-ai", "explorins-benetton"] }
+    },
+    "mazarsBullets": {
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": { "type": "string", "enum": ["mazars-stack", "mazars-lead", "mazars-platform"] }
+    },
+    "freelancerBullets": {
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": { "type": "string", "enum": ["freelancer-bocabla", "freelancer-music"] }
+    },
+    "coverLetter": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["date", "paragraphs"],
+      "properties": {
+        "recipientName": { "type": "string", "maxLength": 80 },
+        "recipientTitle": { "type": "string", "maxLength": 80 },
+        "date": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 40,
+          "description": "YYYY-MM-DD (formatted for the letter language) or an already-formatted date string."
+        },
+        "paragraphs": {
+          "type": "array",
+          "minItems": 2,
+          "maxItems": 4,
+          "items": { "type": "string", "minLength": 1, "maxLength": 700 }
+        },
+        "hooks": {
+          "type": "array",
+          "maxItems": 4,
+          "items": { "type": "string", "minLength": 1, "maxLength": 180 }
+        },
+        "signature": { "type": "string", "minLength": 1, "maxLength": 80 }
+      }
+    }
+  }
+}
