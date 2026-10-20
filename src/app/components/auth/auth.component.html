@@ -5,6 +5,10 @@
       {{ mode() === 'login' ? 'Inicia sesión para gestionar tus CVs' : 'Crea tu cuenta' }}
     </p>
 
+    @if (sessionExpired()) {
+      <p class="session-notice" role="status">Tu sesión ha expirado. Vuelve a iniciar sesión.</p>
+    }
+
     <div class="tabs">
       <button type="button" [class.active]="mode() === 'login'" (click)="switchMode('login')">
         Entrar
@@ -16,7 +20,14 @@
 
     @if (googleReady()) {
       <div class="google-wrap">
-        <div #googleBtn class="google-btn"></div>
+        <div class="google-btn-slot">
+          <div #googleBtn class="google-btn"></div>
+          @if (lastMethod() === 'google') {
+            <div class="on-google-button">
+              <app-last-used-badge method="google" />
+            </div>
+          }
+        </div>
       </div>
       <div class="divider"><span>o con email</span></div>
     }
@@ -54,6 +65,12 @@
 
       @if (error()) {
         <p class="error">{{ error() }}</p>
+      }
+
+      @if (lastMethod() === 'email' && mode() === 'login') {
+        <div class="email-last-used">
+          <app-last-used-badge method="email" />
+        </div>
       }
 
       <button type="submit" class="submit" [disabled]="loading()">

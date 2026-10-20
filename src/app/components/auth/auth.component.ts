@@ -4,13 +4,18 @@ import {
   ElementRef,
   NgZone,
   OnDestroy,
+  afterNextRender,
   inject,
   signal,
   viewChild,
 } from '@angular/core';
+import { toSignal } from '@angular/core/rxjs-interop';
 import { FormsModule } from '@angular/forms';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
+import { map } from 'rxjs';
+import { readLastSignInMethod, SignInMethod } from '../../auth/last-sign-in';
 import { AuthService } from '../../services/auth.service';
+import { LastUsedBadgeComponent } from './last-used-badge.component';
 
 declare global {
   interface Window {
@@ -35,13 +40,14 @@ declare global {
 @Component({
   selector: 'app-auth',
   standalone: true,
-  imports: [FormsModule],
+  imports: [FormsModule, LastUsedBadgeComponent],
   templateUrl: './auth.component.html',
   styleUrl: './auth.component.scss',
 })
 export class AuthComponent implements AfterViewInit, OnDestroy {
   private auth = inject(AuthService);
   private router = inject(Router);
+  private route = inject(ActivatedRoute);
   private zone = inject(NgZone);
 
   private googleBtn = viewChild<ElementRef<HTMLDivElement>>('googleBtn');
@@ -55,6 +61,18 @@ export class AuthComponent implements AfterViewInit, OnDestroy {
   error = signal('');
   loading = signal(false);
   googleReady = signal(false);
+  /** Filled after first render so storage is never read during server rendering. */
+  lastMethod = signal<SignInMethod | null>(null);
+  sessionExpired = toSignal(
+    this.route.queryParamMap.pipe(map((params) => params.get('session') === 'expired')),
+    { initialValue: false }
+  );
+
+  constructor() {
+    afterNextRender(() => {
+      this.lastMethod.set(readLastSignInMethod());
+    });
+  }
 
   ngAfterViewInit(): void {
     void this.initGoogleSignIn();

@@ -30,6 +30,15 @@ h1 {
   font-size: 0.9em;
 }
 
+.session-notice {
+  margin: 0 0 16px;
+  padding: 10px 12px;
+  border-radius: 8px;
+  background: rgba(253, 203, 110, 0.12);
+  color: #ffeaa7;
+  font-size: 0.85em;
+}
+
 .tabs {
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -56,6 +65,20 @@ h1 {
   display: flex;
   justify-content: center;
   margin-bottom: 4px;
+}
+
+.google-btn-slot {
+  position: relative;
+  width: min(360px, 100%);
+}
+
+.on-google-button {
+  position: absolute;
+  z-index: 2;
+  top: 50%;
+  right: 8px;
+  transform: translateY(-50%);
+  pointer-events: none;
 }
 
 .google-btn {
@@ -88,6 +111,12 @@ form {
   display: flex;
   flex-direction: column;
   gap: 12px;
+}
+
+.email-last-used {
+  display: flex;
+  justify-content: flex-end;
+  margin-bottom: -4px;
 }
 
 label {
