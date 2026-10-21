@@ -213,7 +213,7 @@ export function createDefaultCv(name = 'Mi CV'): CvData {
       title: 'Full-Stack Developer',
       summary:
         'I develop responsive, scalable, and maintainable websites, prioritizing a user-friendly UX/UI.',
-      photoUrl: '/images/photo.jpg?v=4',
+      photoUrl: '/images/profile.jpg?v=5',
     },
     contact: {
       email: 'antonilopezdev@gmail.com',

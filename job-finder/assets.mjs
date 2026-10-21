@@ -24,17 +24,17 @@ export function robotoFontCss() {
   return fontCss;
 }
 
-/** Default profile photo (`public/images/photo.jpg`), the portrait on the AI CV. */
+/** Default profile photo (`public/images/profile.jpg`), the AI CV portrait. */
 export function profilePhotoDataUri() {
   if (photoDataUri) return photoDataUri;
-  const path = join(root, '../public/images/photo.jpg');
+  const path = join(root, '../public/images/profile.jpg');
   try {
     const b64 = readFileSync(path).toString('base64');
     photoDataUri = `data:image/jpeg;base64,${b64}`;
     return photoDataUri;
   } catch (error) {
     throw new Error(
-      `Profile photo not found at public/images/photo.jpg (${error.message}). The job-finder templates use the same picture as the default CV.`
+      `Profile photo not found at public/images/profile.jpg (${error.message}). The job-finder templates use the same picture as the default CV.`
     );
   }
 }

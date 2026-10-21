@@ -4,7 +4,7 @@ This path is for the Job Finder bot. It turns a small JSON file into a tailored 
 
 The existing editor templates (Professional, Classic, Modern, Creative, Executive, Private Service) are unchanged. Facts come from `createDefaultCv()` in `src/app/models/cv.model.ts`. English bullets are copied verbatim. Spanish text is a translation of those same facts. A job JSON can reorder and select that catalog. It cannot add an employer, a date, or a skill that is not already listed.
 
-The CV uses the Professional palette (`#5D9CEC`, Roboto) and the default portrait `public/images/photo.jpg`. Highlighted bullets are the same text in bold, moved to the top of that role.
+The CV uses the Professional palette (`#5D9CEC`, Roboto) and the default portrait `public/images/profile.jpg`. Highlighted bullets are the same text in bold, moved to the top of that role.
 
 The cover letter is a separate business letter, not a second CV page. It keeps Roboto and a small copy of the same portrait, and uses a navy accent (`#1B3A4B`) instead of the CV blue. Structure: letterhead, date, recipient block, optional `Re:` / `Asunto:` line, salutation, body, optional hooks, closing and signature. Body text is left-aligned, about 11pt, with roughly one-inch margins and a blank line between paragraphs, which is the usual one-page cover-letter format (about 250–400 words).
 
