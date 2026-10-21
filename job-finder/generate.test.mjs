@@ -63,7 +63,8 @@ test('spanish labels and dates do not change employers', () => {
   assert.equal(job.cv.experience[1].company, 'Forvis Mazars');
   assert.equal(job.cv.experience[1].dates, '10/2025 – 03/2026');
   assert.equal(job.letter.date, '20 de octubre de 2026');
-  assert.match(renderLetterHtml(job.letter), /Estimado equipo de selección/);
+  assert.match(renderLetterHtml(job.letter), /Estimado\/a responsable de selección/);
+  assert.match(renderLetterHtml(job.letter), /Asunto: Frontend Developer/);
 });
 
 test('selection reorders skills and bullets and rejects invented skills', () => {
@@ -89,6 +90,12 @@ test('selection reorders skills and bullets and rejects invented skills', () => 
   );
   assert.equal(job.cv.experience[1].bullets[0].highlight, true);
   assert.equal(job.letter.greeting, 'Dear Example Hiring Manager,');
+  assert.equal(job.letter.subject, 'Re: Frontend Developer');
+  assert.equal(job.letter.accentColor, '#1B3A4B');
+  const letterHtml = renderLetterHtml(job.letter);
+  assert.match(letterHtml, /Re: Frontend Developer/);
+  assert.doesNotMatch(letterHtml, /skill-tag|section-title/);
+  assert.match(renderCvHtml(job.cv), /#5D9CEC/);
   assert.throws(() => buildJob({
     company: 'Example Studio',
     role: 'Frontend Developer',

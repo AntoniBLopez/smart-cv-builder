@@ -31,9 +31,9 @@ export const LABELS = {
     other: 'Other Information',
     present: 'Present',
     greetingNamed: (name) => `Dear ${name},`,
-    greetingTeam: 'Dear Hiring Team,',
-    subject: (role) => `Application for the ${role} position`,
-    closing: 'Kind regards,',
+    greetingTeam: 'Dear Hiring Manager,',
+    subject: (role) => `Re: ${role}`,
+    closing: 'Sincerely,',
   },
   es: {
     skills: 'Competencias',
@@ -46,9 +46,9 @@ export const LABELS = {
     other: 'Otra información',
     present: 'Actualidad',
     greetingNamed: (name) => `Estimado/a ${name}:`,
-    greetingTeam: 'Estimado equipo de selección:',
-    subject: (role) => `Candidatura para el puesto de ${role}`,
-    closing: 'Un saludo,',
+    greetingTeam: 'Estimado/a responsable de selección:',
+    subject: (role) => `Asunto: ${role}`,
+    closing: 'Atentamente,',
   },
 };
 

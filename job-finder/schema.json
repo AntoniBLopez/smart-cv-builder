@@ -103,6 +103,22 @@
       "properties": {
         "recipientName": { "type": "string", "maxLength": 80 },
         "recipientTitle": { "type": "string", "maxLength": 80 },
+        "recipientCity": { "type": "string", "maxLength": 80 },
+        "subject": {
+          "type": "string",
+          "maxLength": 120,
+          "description": "Optional subject line. Omit for \"Re: <role>\" (en) or \"Asunto: <role>\" (es). An empty string hides it."
+        },
+        "accentColor": {
+          "type": "string",
+          "pattern": "^#[0-9A-Fa-f]{6}$",
+          "description": "Optional letter accent. Defaults to navy #1B3A4B. Does not change the CV."
+        },
+        "showPhoto": {
+          "type": "boolean",
+          "default": true,
+          "description": "Small portrait in the letterhead. Set false to omit it."
+        },
         "date": {
           "type": "string",
           "minLength": 1,

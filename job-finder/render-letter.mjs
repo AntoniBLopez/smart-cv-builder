@@ -1,25 +1,34 @@
 import { profilePhotoDataUri, robotoFontCss } from './assets.mjs';
 import { escapeHtml } from './escape.mjs';
 
-const THEME = {
-  primary: '#5D9CEC',
-  secondary: '#4A89DC',
-  accent: '#E8F2FF',
-  text: '#2C3E50',
-  sidebar: '#F8FAFC',
-};
+const INK = '#1F2933';
+const MUTED = '#5C6B76';
 
-/** One-page letter using the same photo, blue header and type as the CV. */
+/**
+ * Business letter, not a CV page.
+ * Navy letterhead, left-aligned blocks, one-inch margins, selectable text.
+ */
 export function renderLetterHtml(letter) {
-  const photo = profilePhotoDataUri();
-  const hooks = letter.hooks.length
-    ? `<ul class="hooks">${letter.hooks.map((hook) => `<li>${escapeHtml(hook)}</li>`).join('')}</ul>`
+  const accent = letter.accentColor;
+  const photo = letter.showPhoto
+    ? `<img class="portrait" src="${profilePhotoDataUri()}" alt="">`
     : '';
-  const recipientLines = [
+  const contact = [
+    letter.contact.email,
+    letter.contact.phone,
+    letter.contact.location,
+    letter.contact.linkedin,
+    letter.contact.github,
+  ].filter(Boolean).map((item) => escapeHtml(item)).join('<span class="dot"> · </span>');
+  const recipient = [
     letter.recipientName,
     letter.recipientTitle,
     letter.company,
+    letter.recipientCity,
   ].filter(Boolean);
+  const hooks = letter.hooks.length
+    ? `<ul class="hooks">${letter.hooks.map((hook) => `<li>${escapeHtml(hook)}</li>`).join('')}</ul>`
+    : '';
 
   return `<!DOCTYPE html>
 <html lang="${letter.language}">
@@ -28,98 +37,94 @@ export function renderLetterHtml(letter) {
   <title>${escapeHtml(letter.fullName)} — ${escapeHtml(letter.company)}</title>
   <style>
     ${robotoFontCss()}
-    ${letterCss()}
+    ${letterCss(accent)}
   </style>
 </head>
 <body>
-  <article class="letter-page">
-    <header class="letter-header">
-      <img src="${photo}" alt="${escapeHtml(letter.fullName)}">
+  <article class="letter">
+    <header class="letterhead">
       <div class="who">
-        <h1>${escapeHtml(letter.fullName)}</h1>
-        <h2>${escapeHtml(letter.headline)}</h2>
+        ${photo}
+        <div>
+          <h1>${escapeHtml(letter.fullName)}</h1>
+          <p class="role-line">${escapeHtml(letter.headline)}</p>
+        </div>
       </div>
+      <p class="contact">${contact}</p>
     </header>
-    <div class="contact-strip">
-      <span>${escapeHtml(letter.contact.email)}</span>
-      <span>${escapeHtml(letter.contact.phone)}</span>
-      <span>${escapeHtml(letter.contact.location)}</span>
-      <span>${escapeHtml(letter.contact.linkedin)}</span>
-      <span>${escapeHtml(letter.contact.github)}</span>
-    </div>
-    <div class="letter-body">
-      <p class="date">${escapeHtml(letter.date)}</p>
-      ${recipientLines.length ? `<p class="recipient">${recipientLines.map((line) => escapeHtml(line)).join('<br>')}</p>` : ''}
-      <p class="subject">${escapeHtml(letter.subject)}</p>
-      <p class="greeting">${escapeHtml(letter.greeting)}</p>
-      ${letter.paragraphs.map((paragraph) => `<p>${escapeHtml(paragraph)}</p>`).join('')}
-      ${hooks}
-      <p class="closing">${escapeHtml(letter.closing)}</p>
-      <p class="signature">${escapeHtml(letter.signature)}</p>
-    </div>
+    <p class="date">${escapeHtml(letter.date)}</p>
+    ${recipient.length ? `<p class="recipient">${recipient.map((line) => escapeHtml(line)).join('<br>')}</p>` : ''}
+    ${letter.subject ? `<p class="subject">${escapeHtml(letter.subject)}</p>` : ''}
+    <p class="greeting">${escapeHtml(letter.greeting)}</p>
+    ${letter.paragraphs.map((paragraph) => `<p>${escapeHtml(paragraph)}</p>`).join('')}
+    ${hooks}
+    <p class="closing">${escapeHtml(letter.closing)}</p>
+    <p class="signature">${escapeHtml(letter.signature)}</p>
+    <p class="signed-title">${escapeHtml(letter.headline)}</p>
   </article>
 </body>
 </html>`;
 }
 
-function letterCss() {
+function letterCss(accent) {
   return `
     @page { size: A4 portrait; margin: 0; }
     * { box-sizing: border-box; }
     html, body { margin: 0; padding: 0; background: #fff; }
     body { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
-    .letter-page {
+    .letter {
       width: 794px;
       min-height: 1123px;
+      padding: 80px 88px 72px;
       font-family: Roboto, sans-serif;
-      font-size: 14px;
-      line-height: 1.5;
-      color: ${THEME.text};
+      font-size: 15px;
+      line-height: 1.55;
+      color: ${INK};
       background: #fff;
     }
-    .letter-header {
-      display: flex;
-      align-items: center;
-      gap: 20px;
-      background: ${THEME.primary};
-      color: #fff;
-      padding: 28px 32px 22px;
+    .letterhead {
+      margin: 0 0 28px;
+      padding-bottom: 14px;
+      border-bottom: 2px solid ${accent};
     }
-    .letter-header img {
-      width: 96px; height: 96px; object-fit: cover; border-radius: 50%;
-      border: 3px solid #fff; flex-shrink: 0;
+    .who { display: flex; align-items: center; gap: 14px; }
+    .portrait {
+      width: 46px; height: 46px; object-fit: cover; border-radius: 50%;
+      flex-shrink: 0;
     }
-    .letter-header h1 { margin: 0 0 4px; font-size: 32px; font-weight: 700; line-height: 1.1; }
-    .letter-header h2 {
-      margin: 0; font-size: 18px; font-weight: 400;
-      border-bottom: 1px solid rgba(255,255,255,0.85); padding-bottom: 4px; display: inline-block;
+    h1 {
+      margin: 0;
+      color: ${accent};
+      font-size: 22px;
+      font-weight: 700;
+      letter-spacing: 0.2px;
+      line-height: 1.2;
     }
-    .contact-strip {
-      display: flex; flex-wrap: wrap; gap: 6px 16px;
-      background: ${THEME.sidebar}; color: ${THEME.secondary};
-      padding: 10px 32px; font-size: 12px; font-weight: 500;
+    .role-line { margin: 2px 0 0; color: ${MUTED}; font-size: 13px; }
+    .contact {
+      margin: 10px 0 0;
+      color: ${MUTED};
+      font-size: 11.5px;
+      line-height: 1.45;
     }
-    .letter-body { padding: 28px 40px 32px; }
-    .date { margin: 0 0 16px; text-align: right; color: #64748b; font-style: italic; }
-    .recipient { margin: 0 0 16px; font-weight: 500; }
-    .subject {
-      margin: 0 0 16px; color: ${THEME.primary}; font-weight: 700;
-      text-transform: uppercase; letter-spacing: 0.6px; font-size: 14px;
-      border-bottom: 2px solid ${THEME.primary}; padding-bottom: 4px; display: inline-block;
+    .dot { color: ${accent}; }
+    .date { margin: 0 0 22px; }
+    .recipient { margin: 0 0 18px; }
+    .subject { margin: 0 0 18px; font-weight: 700; color: ${accent}; }
+    .greeting { margin: 0 0 14px; }
+    p { margin: 0 0 14px; }
+    .hooks {
+      margin: 0 0 14px;
+      padding-left: 1.15em;
     }
-    .greeting { margin: 0 0 12px; }
-    .letter-body p { margin: 0 0 12px; }
-    .hooks { margin: 4px 0 14px; padding-left: 0; list-style: none; }
-    .hooks li {
-      position: relative; margin: 0 0 6px; padding-left: 14px; font-weight: 500;
-    }
-    .hooks li::before {
-      content: ''; position: absolute; left: 0; top: 0.5em;
-      width: 5px; height: 5px; background: ${THEME.primary};
-    }
-    .closing { margin-top: 8px; }
+    .hooks li { margin: 0 0 4px; padding-left: 0.15em; }
+    .closing { margin: 18px 0 14px; }
     .signature {
-      margin: 0; color: ${THEME.primary}; font-weight: 700; font-size: 16px;
+      margin: 0;
+      color: ${accent};
+      font-weight: 700;
+      font-size: 16px;
     }
+    .signed-title { margin: 2px 0 0; color: ${MUTED}; font-size: 13px; }
   `;
 }

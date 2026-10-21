@@ -169,7 +169,18 @@ function buildCv(cvInput, language) {
 function buildLetter(letterInput, { language, company, role }) {
   rejectUnknown(
     letterInput,
-    ['recipientName', 'recipientTitle', 'date', 'paragraphs', 'hooks', 'signature'],
+    [
+      'recipientName',
+      'recipientTitle',
+      'recipientCity',
+      'date',
+      'subject',
+      'paragraphs',
+      'hooks',
+      'signature',
+      'accentColor',
+      'showPhoto',
+    ],
     'coverLetter'
   );
 
@@ -188,12 +199,20 @@ function buildLetter(letterInput, { language, company, role }) {
   const recipientTitle = letterInput.recipientTitle == null
     ? ''
     : optionalText(letterInput.recipientTitle, 'coverLetter.recipientTitle', 80);
+  const recipientCity = letterInput.recipientCity == null
+    ? ''
+    : optionalText(letterInput.recipientCity, 'coverLetter.recipientCity', 80);
   const date = formatLetterDate(requireText(letterInput.date, 'coverLetter.date', 40), language);
   const signature = letterInput.signature == null
     ? PROFILE.fullName
     : requireText(letterInput.signature, 'coverLetter.signature', 80);
-
+  const accentColor = parseAccent(letterInput.accentColor);
+  const showPhoto = parseShowPhoto(letterInput.showPhoto);
   const labels = LABELS[language];
+  const subject = letterInput.subject == null
+    ? labels.subject(role)
+    : optionalText(letterInput.subject, 'coverLetter.subject', 120);
+
   return {
     language,
     fullName: PROFILE.fullName,
@@ -209,14 +228,33 @@ function buildLetter(letterInput, { language, company, role }) {
     role,
     recipientName,
     recipientTitle,
+    recipientCity,
     date,
-    subject: labels.subject(role),
+    subject,
     greeting: recipientName ? labels.greetingNamed(recipientName) : labels.greetingTeam,
     paragraphs,
     hooks,
     closing: labels.closing,
     signature,
+    accentColor,
+    showPhoto,
   };
+}
+
+const DEFAULT_LETTER_ACCENT = '#1B3A4B';
+
+function parseAccent(value) {
+  if (value == null || value === '') return DEFAULT_LETTER_ACCENT;
+  if (typeof value !== 'string' || !/^#[0-9a-fA-F]{6}$/.test(value.trim())) {
+    throw new Error('coverLetter.accentColor must be a #RRGGBB colour');
+  }
+  return value.trim();
+}
+
+function parseShowPhoto(value) {
+  if (value == null) return true;
+  if (typeof value !== 'boolean') throw new Error('coverLetter.showPhoto must be true or false');
+  return value;
 }
 
 function parseBulletSelection(value, experienceOrder) {

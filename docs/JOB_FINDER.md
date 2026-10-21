@@ -4,7 +4,9 @@ This path is for the Job Finder bot. It turns a small JSON file into a tailored 
 
 The existing editor templates (Professional, Classic, Modern, Creative, Executive, Private Service) are unchanged. Facts come from `createDefaultCv()` in `src/app/models/cv.model.ts`. English bullets are copied verbatim. Spanish text is a translation of those same facts. A job JSON can reorder and select that catalog. It cannot add an employer, a date, or a skill that is not already listed.
 
-Colors, type and photo match the Professional CV: `#5D9CEC`, Roboto, and the default portrait `public/images/photo.jpg` (the AI CV photo). Highlighted bullets are the same text in bold, moved to the top of that role.
+The CV uses the Professional palette (`#5D9CEC`, Roboto) and the default portrait `public/images/photo.jpg`. Highlighted bullets are the same text in bold, moved to the top of that role.
+
+The cover letter is a separate business letter, not a second CV page. It keeps Roboto and a small copy of the same portrait, and uses a navy accent (`#1B3A4B`) instead of the CV blue. Structure: letterhead, date, recipient block, optional `Re:` / `Asunto:` line, salutation, body, optional hooks, closing and signature. Body text is left-aligned, about 11pt, with roughly one-inch margins and a blank line between paragraphs, which is the usual one-page cover-letter format (about 250–400 words).
 
 ## Command
 
@@ -69,10 +71,13 @@ Schema: `job-finder/schema.json`. Example, with fictional company and letter tex
 | `cv.bullets` | no | Map of role id to bullet ids. Omitted roles keep every bullet. |
 | `cv.highlightBullets` | no | Bullet ids to render bold and first inside their role. |
 | `cv.educationDetails`, `cv.interests`, `cv.otherInfo` | no | Subsets, in the order given. An empty array hides that block. |
-| `coverLetter.paragraphs` | yes | 2 to 4 short paragraphs supplied by the caller. |
-| `coverLetter.hooks` | no | Up to 4 short bullets. |
+| `coverLetter.paragraphs` | yes | 2 to 4 paragraphs supplied by the caller. Three or four, totalling about 250–400 words, fit one page. |
+| `coverLetter.hooks` | no | Up to 4 short bullets, set as a normal list under the paragraphs. |
 | `coverLetter.date` | yes | `YYYY-MM-DD` or an already formatted date string. |
-| `coverLetter.recipientName`, `recipientTitle`, `signature` | no | Left blank, the greeting is the generic hiring-team line and the signature is Antoni's name. |
+| `coverLetter.recipientName`, `recipientTitle`, `recipientCity`, `signature` | no | Name, title and city form the recipient block. With no name, the greeting is the generic hiring-manager line. The signature defaults to Antoni's name. |
+| `coverLetter.subject` | no | Subject line. Omit it for `Re: <role>` in English or `Asunto: <role>` in Spanish. `""` hides the line. |
+| `coverLetter.accentColor` | no | `#RRGGBB` for the letter only. Default `#1B3A4B`. |
+| `coverLetter.showPhoto` | no | Small portrait in the letterhead. Default `true`. |
 
 ### Catalog ids
 
