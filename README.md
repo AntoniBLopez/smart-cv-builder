@@ -96,3 +96,13 @@ Los cambios se guardan en MongoDB automáticamente.
 ```bash
 pnpm run build
 ```
+
+## Job Finder (CV + carta para el bot)
+
+Generador determinista, sin LLM y sin abrir la app: a partir de un JSON escribe el CV de frontend y una carta de una página en PDF. Los CVs del editor no cambian. Esquema, ids y ejemplo: [docs/JOB_FINDER.md](docs/JOB_FINDER.md).
+
+```bash
+npm run generate -- --input job-finder/example.job.json --out ./output
+```
+
+El ejemplo usa una empresa y una carta ficticias (`Example Studio`). El contenido del CV sale del catálogo real del repo.

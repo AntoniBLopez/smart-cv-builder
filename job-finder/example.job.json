@@ -1,0 +1,50 @@
+{
+  "$schema": "./schema.json",
+  "_comment": "EXAMPLE DATA. company, role, recipient and coverLetter paragraphs are fictional and labelled EXAMPLE. CV skills, experience ids and bullet ids are real catalog entries from this repo, not invented employers.",
+  "language": "en",
+  "company": "Example Studio",
+  "role": "Frontend Developer",
+  "cv": {
+    "headline": "Frontend Developer",
+    "skills": [
+      "Angular",
+      "React",
+      "Next.js",
+      "JavaScript",
+      "TypeScript",
+      "Figma",
+      "Lovable",
+      "Cursor",
+      "Node.js",
+      "MongoDB",
+      "Databases SQL & NoSQL",
+      "Git with GitHub & GitLab",
+      "Diligent",
+      "Methodical",
+      "Ambitious"
+    ],
+    "experienceOrder": ["explorins", "mazars", "freelancer"],
+    "highlightBullets": [
+      "explorins-angular",
+      "explorins-benetton",
+      "mazars-stack",
+      "freelancer-bocabla"
+    ]
+  },
+  "coverLetter": {
+    "recipientName": "Example Hiring Manager",
+    "recipientTitle": "Head of Engineering",
+    "recipientCity": "Barcelona",
+    "date": "2026-10-20",
+    "paragraphs": [
+      "EXAMPLE PARAGRAPH — this is not a real application. I am writing to Example Studio about the Frontend Developer role. I build responsive, scalable and maintainable interfaces, and I treat a clear UX/UI as part of the work rather than a separate step.",
+      "EXAMPLE PARAGRAPH — at eXplorins I worked as a FrontEnd Developer with Angular 19 and TypeScript, using DDD and Playwright for end-to-end tests. I also built a Benetton application on a REST API and a dashboard that made the data understandable. At Forvis Mazars I used React 19 and TypeScript on an internal platform, including code review for a team of four.",
+      "EXAMPLE PARAGRAPH — alongside that work I shipped bocabla.com, an educational Next.js app that now serves more than 80 clients. On my own time I have kept studying: CS50x from Harvard, software training at Platzi, and the Oracle Cloud Infrastructure AI Foundations certificate. I would bring the same frontend focus to Example Studio: interfaces people can use, and code other developers can maintain. Thank you for considering this example. I would be glad to talk about how I can help the team."
+    ],
+    "hooks": [
+      "EXAMPLE HOOK — Angular 19, TypeScript and Playwright at eXplorins",
+      "EXAMPLE HOOK — React 19 and TypeScript at Forvis Mazars"
+    ],
+    "signature": "Antoni Bassols López"
+  }
+}
