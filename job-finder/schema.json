@@ -4,7 +4,7 @@
   "title": "Job Finder CV and cover letter input",
   "type": "object",
   "additionalProperties": false,
-  "required": ["company", "role", "coverLetter"],
+  "required": ["company", "role"],
   "properties": {
     "$schema": { "type": "string" },
     "_comment": { "type": "string" },
@@ -17,7 +17,10 @@
     "company": { "type": "string", "minLength": 1, "maxLength": 80 },
     "role": { "type": "string", "minLength": 1, "maxLength": 80 },
     "cv": { "$ref": "#/$defs/cv" },
-    "coverLetter": { "$ref": "#/$defs/coverLetter" }
+    "coverLetter": {
+      "$ref": "#/$defs/coverLetter",
+      "description": "Optional. Omit the property to write only the CV. When present, paragraphs, hooks and subject must name company and must not name a different known target company."
+    }
   },
   "$defs": {
     "cv": {
@@ -31,10 +34,18 @@
           "type": "array",
           "minItems": 1,
           "uniqueItems": true,
+          "description": "English catalog ids, in display order. Spanish CVs print a translated label for REST APIs, i18n and Accessibility (WCAG).",
           "items": { "type": "string", "enum": [
             "Angular", "React", "Next.js", "JavaScript", "TypeScript", "Figma",
             "Lovable", "Cursor", "Node.js", "MongoDB", "Databases SQL & NoSQL",
-            "Git with GitHub & GitLab", "Diligent", "Methodical", "Ambitious"
+            "Git with GitHub & GitLab", "Diligent", "Methodical", "Ambitious",
+            "Tailwind CSS", "Vue", "Redux / Redux Toolkit", "Zustand", "RxJS", "NgRx",
+            "GraphQL / Apollo", "SASS / SCSS", "Styled Components",
+            "Material UI / Angular Material", "Storybook", "Jest", "Vitest",
+            "Testing Library", "Cypress", "Playwright", "Vite", "Webpack",
+            "CI/CD (GitHub Actions / GitLab CI)", "Vercel", "Express", "PostgreSQL",
+            "Firebase / Supabase", "REST APIs", "PWA / Service Workers",
+            "Three.js / WebGL", "i18n", "Accessibility (WCAG)", "Scrum / Agile"
           ]}
         },
         "experienceOrder": {

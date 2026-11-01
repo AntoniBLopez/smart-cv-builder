@@ -2,7 +2,7 @@
 
 This path is for the Job Finder bot. It turns a small JSON file into a tailored frontend CV and a one-page cover letter. Layout and PDF rendering happen here. There is no LLM call and no browser UI.
 
-The existing editor templates (Professional, Classic, Modern, Creative, Executive, Private Service) are unchanged. Facts come from `createDefaultCv()` in `src/app/models/cv.model.ts`. English bullets are copied verbatim. Spanish text is a translation of those same facts. A job JSON can reorder and select that catalog. It cannot add an employer, a date, or a skill that is not already listed.
+The existing editor templates (Professional, Classic, Modern, Creative, Executive, Private Service) are unchanged. Employers, dates and bullets come from `createDefaultCv()` in `src/app/models/cv.model.ts`. English bullets are copied verbatim. Spanish text is a translation of those same facts. A job JSON can reorder and select the catalog. It cannot add an employer, a date, or a skill that is not in the catalog. The selectable skill catalog is the default CV list plus technologies Antoni confirmed he knows. Omitting `cv.skills` still prints the original default skill list.
 
 The CV uses the Professional palette (`#5D9CEC`, Roboto) and the default portrait `public/images/profile.jpg`. Highlighted bullets are the same text in bold, moved to the top of that role.
 
@@ -16,14 +16,17 @@ From the repo root:
 npm run generate -- --input job-finder/example.job.json --out ./output
 ```
 
-`pnpm run generate` works the same way. The script writes:
+`pnpm run generate` works the same way. The script always writes:
 
 - `output/CV_<Company>_<Role>.pdf`
+
+When the input includes `coverLetter`, it also writes:
+
 - `output/CoverLetter_<Company>_<Role>.pdf`
 
-Spaces in the company and role become underscores. The example files are `CV_Example_Studio_Frontend_Developer.pdf` and `CoverLetter_Example_Studio_Frontend_Developer.pdf`.
+Omit `coverLetter` for a CV only. Spaces in the company and role become underscores. The example files are `CV_Example_Studio_Frontend_Developer.pdf` and `CoverLetter_Example_Studio_Frontend_Developer.pdf`.
 
-Stdout is JSON with `ok`, `files` and `pages`. The cover letter must be exactly one page; if the paragraphs are too long the command exits with an error. Chrome or Chromium has to be on the machine (or `CHROME_PATH`). Generation does not call the network.
+Stdout is JSON with `ok`, `files` and `pages`. `files` lists only the PDFs that were written, and `pages.coverLetter` is present only when the letter was written. The cover letter must be exactly one page; if the paragraphs are too long the command exits with an error. Chrome or Chromium has to be on the machine (or `CHROME_PATH`). Generation does not call the network.
 
 Print the allowed ids:
 
@@ -54,7 +57,7 @@ Schema: `job-finder/schema.json`. Example, with fictional company and letter tex
     "recipientName": "Example Hiring Manager",
     "recipientTitle": "Head of Engineering",
     "date": "2026-10-20",
-    "paragraphs": ["First short paragraph.", "Second short paragraph."],
+    "paragraphs": ["First short paragraph for Example Studio.", "Second short paragraph for Example Studio."],
     "hooks": ["Optional short hook."],
     "signature": "Antoni Bassols López"
   }
@@ -64,20 +67,30 @@ Schema: `job-finder/schema.json`. Example, with fictional company and letter tex
 | Field | Required | What it does |
 | --- | --- | --- |
 | `language` | no | `en` (default) or `es`. Switches labels and catalog wording. |
-| `company`, `role` | yes | Used in the letter and in the PDF file names. |
+| `company`, `role` | yes | Used in the PDF file names. `company` is also the name the cover letter must use. |
 | `cv.headline`, `cv.summary` | no | Replace the default frontend headline and summary. |
 | `cv.skills` | no | Skill names to show, in order. Must be from the catalog. |
 | `cv.experienceOrder` | no | Role ids to show, in order. Omitted roles are left out. |
 | `cv.bullets` | no | Map of role id to bullet ids. Omitted roles keep every bullet. |
 | `cv.highlightBullets` | no | Bullet ids to render bold and first inside their role. |
 | `cv.educationDetails`, `cv.interests`, `cv.otherInfo` | no | Subsets, in the order given. An empty array hides that block. |
-| `coverLetter.paragraphs` | yes | 2 to 4 paragraphs supplied by the caller. Three or four, totalling about 250–400 words, fit one page. |
+| `coverLetter` | no | Omit the property to write only the CV. When the property is present, the letter is validated and written. |
+| `coverLetter.paragraphs` | when `coverLetter` is present | 2 to 4 paragraphs supplied by the caller. Three or four, totalling about 250–400 words, fit one page. |
 | `coverLetter.hooks` | no | Up to 4 short bullets, set as a normal list under the paragraphs. |
-| `coverLetter.date` | yes | `YYYY-MM-DD` or an already formatted date string. |
+| `coverLetter.date` | when `coverLetter` is present | `YYYY-MM-DD` or an already formatted date string. |
 | `coverLetter.recipientName`, `recipientTitle`, `recipientCity`, `signature` | no | Name, title and city form the recipient block. With no name, the greeting is the generic hiring-manager line. The signature defaults to Antoni's name. |
 | `coverLetter.subject` | no | Subject line. Omit it for `Re: <role>` in English or `Asunto: <role>` in Spanish. `""` hides the line. |
 | `coverLetter.accentColor` | no | `#RRGGBB` for the letter only. Default `#1B3A4B`. |
 | `coverLetter.showPhoto` | no | Small portrait in the letterhead. Default `true`. |
+
+### Cover letter company check
+
+The recipient block prints `company` from the input, so that line is not evidence the prose was written for this application. When `coverLetter` is present, the generator joins `paragraphs`, `hooks` and an explicit `subject` (the default `Re:` / `Asunto:` line is not counted) and then:
+
+- rejects the run if that text names a known target company other than `company`
+- rejects the run if that text does not name `company` at all
+
+Matching ignores case, accents and extra spaces, and requires the whole company name (so `Example` does not count as `Example Studio`). Past employers and clients in the CV catalog, including eXplorins, Forvis Mazars and Benetton, are not treated as target companies. The known target list is `Example Studio`, the fictional company in `job-finder/example.job.json`. A base JSON that still contains that letter, or any letter that never names the current `company`, fails before any PDF is written.
 
 ### Catalog ids
 
@@ -89,7 +102,11 @@ Experience:
 | `mazars` | Forvis Mazars · Full-Stack Developer / Technical Lead · 10/2025–03/2026 | `mazars-stack`, `mazars-lead`, `mazars-platform` |
 | `freelancer` | Freelancer & Solopreneur · FullStack Developer · 11/2021–Present | `freelancer-bocabla`, `freelancer-music` |
 
-Skills: Angular, React, Next.js, JavaScript, TypeScript, Figma, Lovable, Cursor, Node.js, MongoDB, Databases SQL & NoSQL, Git with GitHub & GitLab, Diligent, Methodical, Ambitious.
+Skills, as English ids accepted in `cv.skills`. The first group is the default when `cv.skills` is omitted: Angular, React, Next.js, JavaScript, TypeScript, Figma, Lovable, Cursor, Node.js, MongoDB, Databases SQL & NoSQL, Git with GitHub & GitLab, Diligent, Methodical, Ambitious.
+
+Also selectable: Tailwind CSS, Vue, Redux / Redux Toolkit, Zustand, RxJS, NgRx, GraphQL / Apollo, SASS / SCSS, Styled Components, Material UI / Angular Material, Storybook, Jest, Vitest, Testing Library, Cypress, Playwright, Vite, Webpack, CI/CD (GitHub Actions / GitLab CI), Vercel, Express, PostgreSQL, Firebase / Supabase, REST APIs, PWA / Service Workers, Three.js / WebGL, i18n, Accessibility (WCAG), Scrum / Agile.
+
+On a Spanish CV the labels are Accesibilidad (WCAG), APIs REST and Internacionalización (i18n). The JSON still uses the English ids. Every other skill uses the same label in both languages.
 
 Education details: `edu-oracle`, `edu-cs50`, `edu-platzi`, `edu-stack`.
 

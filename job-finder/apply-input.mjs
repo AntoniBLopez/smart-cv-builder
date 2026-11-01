@@ -1,9 +1,12 @@
+import { buildLetter } from './letter.mjs';
 import {
   DEFAULT_EDUCATION_DETAILS,
   DEFAULT_EXPERIENCE_ORDER,
   DEFAULT_HIGHLIGHTS,
   DEFAULT_OTHER_INFO,
   DEFAULT_SKILL_ORDER,
+  skillIds,
+  skillLabel,
   EDUCATION,
   EXPERIENCE,
   INTERESTS,
@@ -15,11 +18,7 @@ import {
   formatDateRange,
   textOf,
 } from './profile.mjs';
-
-const MONTHS = {
-  en: ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'],
-  es: ['enero', 'febrero', 'marzo', 'abril', 'mayo', 'junio', 'julio', 'agosto', 'septiembre', 'octubre', 'noviembre', 'diciembre'],
-};
+import { asObject, rejectUnknown, requireText } from './text.mjs';
 
 export function buildJob(input) {
   const source = asObject(input, 'input');
@@ -33,14 +32,17 @@ export function buildJob(input) {
   const company = requireText(source.company, 'company', 80);
   const role = requireText(source.role, 'role', 80);
   const cvInput = source.cv == null ? {} : asObject(source.cv, 'cv');
-  const letterInput = asObject(source.coverLetter, 'coverLetter');
+  const hasLetter = Object.hasOwn(source, 'coverLetter');
+  const letter = hasLetter
+    ? buildLetter(asObject(source.coverLetter, 'coverLetter'), { language, company, role })
+    : null;
 
   return {
     language,
     company,
     role,
     cv: buildCv(cvInput, language),
-    letter: buildLetter(letterInput, { language, company, role }),
+    letter,
   };
 }
 
@@ -72,10 +74,10 @@ function buildCv(cvInput, language) {
   const skills = selectIds(
     cvInput.skills,
     DEFAULT_SKILL_ORDER,
-    new Set(DEFAULT_SKILL_ORDER),
+    new Set(skillIds()),
     'cv.skills',
     { min: 1 }
-  );
+  ).map((id) => skillLabel(id, language));
   const experienceOrder = selectIds(
     cvInput.experienceOrder,
     DEFAULT_EXPERIENCE_ORDER,
@@ -166,97 +168,6 @@ function buildCv(cvInput, language) {
   };
 }
 
-function buildLetter(letterInput, { language, company, role }) {
-  rejectUnknown(
-    letterInput,
-    [
-      'recipientName',
-      'recipientTitle',
-      'recipientCity',
-      'date',
-      'subject',
-      'paragraphs',
-      'hooks',
-      'signature',
-      'accentColor',
-      'showPhoto',
-    ],
-    'coverLetter'
-  );
-
-  const paragraphs = asStringArray(letterInput.paragraphs, 'coverLetter.paragraphs', {
-    min: 2,
-    max: 4,
-    itemMax: 700,
-  });
-  const hooks = letterInput.hooks == null
-    ? []
-    : asStringArray(letterInput.hooks, 'coverLetter.hooks', { min: 0, max: 4, itemMax: 180 });
-
-  const recipientName = letterInput.recipientName == null
-    ? ''
-    : optionalText(letterInput.recipientName, 'coverLetter.recipientName', 80);
-  const recipientTitle = letterInput.recipientTitle == null
-    ? ''
-    : optionalText(letterInput.recipientTitle, 'coverLetter.recipientTitle', 80);
-  const recipientCity = letterInput.recipientCity == null
-    ? ''
-    : optionalText(letterInput.recipientCity, 'coverLetter.recipientCity', 80);
-  const date = formatLetterDate(requireText(letterInput.date, 'coverLetter.date', 40), language);
-  const signature = letterInput.signature == null
-    ? PROFILE.fullName
-    : requireText(letterInput.signature, 'coverLetter.signature', 80);
-  const accentColor = parseAccent(letterInput.accentColor);
-  const showPhoto = parseShowPhoto(letterInput.showPhoto);
-  const labels = LABELS[language];
-  const subject = letterInput.subject == null
-    ? labels.subject(role)
-    : optionalText(letterInput.subject, 'coverLetter.subject', 120);
-
-  return {
-    language,
-    fullName: PROFILE.fullName,
-    headline: textOf(PROFILE.headline, language),
-    contact: {
-      email: PROFILE.email,
-      phone: PROFILE.phone,
-      location: textOf(PROFILE.location, language),
-      linkedin: PROFILE.linkedin,
-      github: PROFILE.github,
-    },
-    company,
-    role,
-    recipientName,
-    recipientTitle,
-    recipientCity,
-    date,
-    subject,
-    greeting: recipientName ? labels.greetingNamed(recipientName) : labels.greetingTeam,
-    paragraphs,
-    hooks,
-    closing: labels.closing,
-    signature,
-    accentColor,
-    showPhoto,
-  };
-}
-
-const DEFAULT_LETTER_ACCENT = '#1B3A4B';
-
-function parseAccent(value) {
-  if (value == null || value === '') return DEFAULT_LETTER_ACCENT;
-  if (typeof value !== 'string' || !/^#[0-9a-fA-F]{6}$/.test(value.trim())) {
-    throw new Error('coverLetter.accentColor must be a #RRGGBB colour');
-  }
-  return value.trim();
-}
-
-function parseShowPhoto(value) {
-  if (value == null) return true;
-  if (typeof value !== 'boolean') throw new Error('coverLetter.showPhoto must be true or false');
-  return value;
-}
-
 function parseBulletSelection(value, experienceOrder) {
   if (value == null) return new Map();
   const source = asObject(value, 'cv.bullets');
@@ -333,55 +244,6 @@ function selectIds(value, fallback, allowed, label, { min }) {
   return ids;
 }
 
-function asStringArray(value, label, { min, max, itemMax }) {
-  if (!Array.isArray(value)) throw new Error(`${label} must be an array of strings`);
-  if (value.length < min || value.length > max) {
-    throw new Error(`${label} must contain ${min} to ${max} item(s)`);
-  }
-  return value.map((item, index) => requireText(item, `${label}[${index}]`, itemMax));
-}
-
-function formatLetterDate(value, language) {
-  const iso = /^(\d{4})-(\d{2})-(\d{2})$/.exec(value);
-  if (!iso) return value;
-  const year = Number(iso[1]);
-  const month = Number(iso[2]);
-  const day = Number(iso[3]);
-  if (month < 1 || month > 12 || day < 1 || day > 31) {
-    throw new Error('coverLetter.date must be a real calendar date (YYYY-MM-DD) or a display string');
-  }
-  const monthName = MONTHS[language][month - 1];
-  return language === 'es' ? `${day} de ${monthName} de ${year}` : `${day} ${monthName} ${year}`;
-}
-
-function asObject(value, label) {
-  if (value == null || typeof value !== 'object' || Array.isArray(value)) {
-    throw new Error(`${label} must be an object`);
-  }
-  return value;
-}
-
-function rejectUnknown(source, allowed, label) {
-  for (const key of Object.keys(source)) {
-    if (!allowed.includes(key)) throw new Error(`Unknown property ${label}.${key}`);
-  }
-}
-
-function requireText(value, label, max) {
-  if (typeof value !== 'string') throw new Error(`${label} must be a string`);
-  const trimmed = value.trim();
-  if (!trimmed) throw new Error(`${label} must not be empty`);
-  if (trimmed.length > max) throw new Error(`${label} must be at most ${max} characters`);
-  return trimmed;
-}
-
-function optionalText(value, label, max) {
-  if (typeof value !== 'string') throw new Error(`${label} must be a string`);
-  const trimmed = value.trim();
-  if (trimmed.length > max) throw new Error(`${label} must be at most ${max} characters`);
-  return trimmed;
-}
-
 export function fileSlug(value) {
   const slug = value
     .normalize('NFKD')
@@ -400,4 +262,10 @@ export function outputFileNames(company, role) {
     cv: `CV_${companySlug}_${roleSlug}.pdf`,
     coverLetter: `CoverLetter_${companySlug}_${roleSlug}.pdf`,
   };
+}
+
+/** File names the generator will write. The cover letter is included only when the input had `coverLetter`. */
+export function plannedFiles(job) {
+  const names = outputFileNames(job.company, job.role);
+  return job.letter ? [names.cv, names.coverLetter] : [names.cv];
 }

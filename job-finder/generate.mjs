@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 import { readFile, mkdir } from 'node:fs/promises';
 import { resolve } from 'node:path';
-import { buildJob, outputFileNames } from './apply-input.mjs';
+import { buildJob, plannedFiles } from './apply-input.mjs';
 import { catalog } from './profile.mjs';
 import { htmlToPdf, pdfPageCount } from './pdf.mjs';
 import { renderCvHtml } from './render-cv.mjs';
@@ -10,7 +10,8 @@ import { renderLetterHtml } from './render-letter.mjs';
 const HELP = `Usage:
   npm run generate -- --input job.json --out ./output
 
-Writes CV_<Company>_<Role>.pdf and CoverLetter_<Company>_<Role>.pdf.
+Writes CV_<Company>_<Role>.pdf.
+When the input includes coverLetter, also writes CoverLetter_<Company>_<Role>.pdf.
 No network calls and no LLM. Chrome/Chromium is used only to print HTML to PDF.
 
 Options:
@@ -43,20 +44,26 @@ async function main() {
   }
 
   const job = buildJob(json);
-  const names = outputFileNames(job.company, job.role);
+  const planned = plannedFiles(job);
   const outDir = resolve(args.outDir);
   await mkdir(outDir, { recursive: true });
 
-  const cvPath = resolve(outDir, names.cv);
-  const letterPath = resolve(outDir, names.coverLetter);
+  const cvPath = resolve(outDir, planned[0]);
   const cvPdf = await htmlToPdf(renderCvHtml(job.cv), cvPath);
-  const letterPdf = await htmlToPdf(renderLetterHtml(job.letter), letterPath);
-  const letterPages = pdfPageCount(letterPdf);
+  const files = [cvPath];
+  const pages = { cv: pdfPageCount(cvPdf) };
 
-  if (letterPages !== 1) {
-    throw new Error(
-      `Cover letter is ${letterPages} pages. Keep coverLetter.paragraphs to 2-4 short paragraphs so it stays on one page.`
-    );
+  if (job.letter) {
+    const letterPath = resolve(outDir, planned[1]);
+    const letterPdf = await htmlToPdf(renderLetterHtml(job.letter), letterPath);
+    const letterPages = pdfPageCount(letterPdf);
+    if (letterPages !== 1) {
+      throw new Error(
+        `Cover letter is ${letterPages} pages. Keep coverLetter.paragraphs to 2-4 short paragraphs so it stays on one page.`
+      );
+    }
+    files.push(letterPath);
+    pages.coverLetter = letterPages;
   }
 
   const result = {
@@ -64,11 +71,8 @@ async function main() {
     language: job.language,
     company: job.company,
     role: job.role,
-    files: [cvPath, letterPath],
-    pages: {
-      cv: pdfPageCount(cvPdf),
-      coverLetter: letterPages,
-    },
+    files,
+    pages,
   };
   process.stdout.write(`${JSON.stringify(result, null, 2)}\n`);
 }

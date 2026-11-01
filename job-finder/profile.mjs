@@ -5,6 +5,10 @@
  * Nothing here is inferred from a job posting.
  */
 
+import { skillIds } from './skills.mjs';
+
+export { DEFAULT_SKILL_ORDER, skillIds, skillLabel } from './skills.mjs';
+
 export const PROFILE = {
   fullName: 'Antoni Bassols López',
   email: 'antonilopezdev@gmail.com',
@@ -59,27 +63,6 @@ const LEVELS = {
     es: 'Competencia profesional completa',
   },
 };
-
-/** Frontend-first order of the skills already listed on the default CV. */
-export const DEFAULT_SKILL_ORDER = [
-  'Angular',
-  'React',
-  'Next.js',
-  'JavaScript',
-  'TypeScript',
-  'Figma',
-  'Lovable',
-  'Cursor',
-  'Node.js',
-  'MongoDB',
-  'Databases SQL & NoSQL',
-  'Git with GitHub & GitLab',
-  'Diligent',
-  'Methodical',
-  'Ambitious',
-];
-
-export const SKILLS = DEFAULT_SKILL_ORDER.map((name) => ({ id: name, name }));
 
 export const LANGUAGES = [
   { id: 'catala', name: 'Català', level: LEVELS['Native Proficiency'] },
@@ -282,7 +265,7 @@ export function bulletById(id) {
 
 export function catalog() {
   return {
-    skills: DEFAULT_SKILL_ORDER,
+    skills: skillIds(),
     experience: EXPERIENCE.map((role) => ({
       id: role.id,
       company: role.company,
